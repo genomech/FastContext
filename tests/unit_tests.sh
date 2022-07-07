@@ -194,3 +194,11 @@ echo
 echo '--- NORMAL TEST PAIRED-END JSON EXAMPLE ---'
 python3 ${TestScript} -1 ${ScriptDir}/standard_test_R1.fastq.gz -2 ${ScriptDir}/standard_test_R2.fastq.gz -p '{"oligme": "CTGTCTCTTATACACATCT", "oligb": "CCGAGCCCACGAGAC", "oliga": "TCGTCGGCAGCGTC", "fivezerotwo": "CTCTCTAT", "sevenzerotwo": "CTAGTACG", "sevenzeroone": "TCGCCTTA" }' -k 15 -m 100 -t /dev/null -j ${ScriptDir}/standard_test_raw_pe.json.gz
 echo
+
+echo '--- NORMAL TEST SINGLE-END JSON EXAMPLE, LEVENSHTEIN ---'
+python3 ${TestScript} -1 ${ScriptDir}/standard_test_R1.fastq.gz -p '{"oligme": "CTGTCTCTTATACACATCT", "oligb": "CCGAGCCCACGAGAC", "oliga": "TCGTCGGCAGCGTC", "fivezerotwo": "CTCTCTAT", "sevenzerotwo": "CTAGTACG", "sevenzeroone": "TCGCCTTA" }' -k 15 -m 100 -t /dev/null -j ${ScriptDir}/standard_test_raw_levenshtein_se.json.gz -l
+echo
+
+echo '--- NORMAL TEST PAIRED-END JSON EXAMPLE, LEVENSHTEIN ---'
+python3 ${TestScript} -1 ${ScriptDir}/standard_test_R1.fastq.gz -2 ${ScriptDir}/standard_test_R2.fastq.gz -p '{"oligme": "CTGTCTCTTATACACATCT", "oligb": "CCGAGCCCACGAGAC", "oliga": "TCGTCGGCAGCGTC", "fivezerotwo": "CTCTCTAT", "sevenzerotwo": "CTAGTACG", "sevenzeroone": "TCGCCTTA" }' -k 15 -m 100 -t /dev/null -j ${ScriptDir}/standard_test_raw_levenshtein_pe.json.gz -l
+echo
