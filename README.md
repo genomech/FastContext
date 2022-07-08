@@ -1,6 +1,7 @@
 # FastContext
 
 ![GitHub issues](https://img.shields.io/github/issues/regnveig/FastContext?style=flat-square)
+![GitHub last commit (branch)](https://img.shields.io/github/last-commit/regnveig/FastContext/sandbox?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/regnveig/FastContext?style=flat-square)
 
 ## Description
