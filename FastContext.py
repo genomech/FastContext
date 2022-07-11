@@ -220,18 +220,18 @@ def CreateParser():
 			epilog = f'Author: {__author__}'
 			)
 	Default_parser.add_argument ('-v', '--version', action = 'version', version = __version__)
-	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file (may be gzipped or bzipped)')
-	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f'FastQ input R2 file (may be gzipped or bzipped)')
-	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for, plain JSON format: \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. Order of patterns is order of search.')
-	Default_parser.add_argument ('-t', '--tsv', required = True, type = str, dest = 'OutputTSV', help = f'Output TSV file. Contains only general statistics (read structure counts and percentages).')
-	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON). Contains extended statistics on every read')
-	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max size of unrecognized sequence to be written as K-mer of certain length. Default = {GLOBAL_KMER_SIZE}')
-	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. Default = "{GLOBAL_UNRECOGNIZED}"')
-	Default_parser.add_argument ('-m', '--max-reads', default = GLOBAL_MAX, type = int, dest = 'MaxReads', help = f'Max reads number to analyze (0 - no limit). Default = {GLOBAL_MAX}')
-	Default_parser.add_argument ('-f', '--rate-floor', default = GLOBAL_RATE_FLOOR, type = float, dest = 'RateFloor', help = f'Min rate to write read structure into stats TSV table. Default = {GLOBAL_RATE_FLOOR}')
+	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file. May be uncompressed, gzipped or bzipped. Required.')
+	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f' FastQ input R2 file. May be uncompressed, gzipped or bzipped. If single-end mode, ignore this option.')
+	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for. Plain Javascript Object String (Key-Value), e.g. \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. The order of patterns is the order of search. Required.')
+	Default_parser.add_argument ('-t', '--tsv', required = True, type = str, dest = 'OutputTSV', help = f'Output TSV file. Contains only general statistics (read structure counts and percentages). Required')
+	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON). Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).')
+	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max size of unrecognized sequence to be written as K-mer of certain length. Non-negative integer. Default = {GLOBAL_KMER_SIZE}')
+	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. 2-16 small Latin chars. Default = "{GLOBAL_UNRECOGNIZED}"')
+	Default_parser.add_argument ('-m', '--max-reads', default = GLOBAL_MAX, type = int, dest = 'MaxReads', help = f'Max reads number to analyze (0 -- no limit). Non-negative integer. Notice that read number bigger than recommended may cause memory overflow. Default = {GLOBAL_MAX}')
+	Default_parser.add_argument ('-f', '--rate-floor', default = GLOBAL_RATE_FLOOR, type = float, dest = 'RateFloor', help = f'Min rate to write read structure into statistics TSV table. Float from 0 to 1. Non-negative integer less than 2*cpu_count(). Default = {GLOBAL_RATE_FLOOR}')
 	Default_parser.add_argument ('-@', '--threads', default = GLOBAL_THREADS, type = int, dest = 'ThreadsNum', help = f'Threads number. Default = {GLOBAL_THREADS}')
 	Default_parser.add_argument ('-d', '--dont-check-read-names', action = 'store_true', dest = 'DontCheckReadNames', help = f'Don\'t check read names. Use this if you have unusual (non-Illumina) paired read names. Makes sense only in paired reads mode. Disabled by default.')
-	Default_parser.add_argument ('-l', '--levenshtein', action = 'store_true', dest = 'CalculateLevenshtein', help = f'Calculate patterns Levenshtein distances for each position in read. Notice that it highly increases the time of processing.')
+	Default_parser.add_argument ('-l', '--levenshtein', action = 'store_true', dest = 'CalculateLevenshtein', help = f'Calculate patterns Levenshtein distances for each position in read. Results are written into extended statistics file (JSON.GZ). Notice that it highly increases the time of processing.')
 	return Default_parser
 
 ## ------======| ANALYSIS |======------
