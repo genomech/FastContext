@@ -28,8 +28,10 @@ python3 -m pip install argparse biopython pandas python-Levenshtein tqdm
 
 Optional arguments:
 
+<dl>
 <dt>`-1`, `--r1`</dt>
 <dd>
+
 **Required:** <font color=red>Yes</font>
 
 **Format:** String
@@ -39,10 +41,12 @@ FastQ input R1 file.
 May be uncompressed, gzipped or bzipped.
 
 **Usage:** `-1 input.fastq.gz`
+
 </dd>
 
 <dt>`-p`, `--patterns`</dt>
 <dd>
+
 **Required:** <font color=red>Yes</font>
 
 **Format:** Plain Javascript Object String (Key-Value)
@@ -52,10 +56,12 @@ Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences mu
 The order of patterns is the order of search.
 
 **Usage:** `-p '{"first": "CTCAGCGCTGAG", "second": "AAAAAA", "third": "GATC"}'`
+
 </dd>
 
 <dt>`-t`, `--tsv`</dt>
 <dd>
+
 **Required:** <font color=red>Yes</font>
 
 **Format:** String
@@ -65,10 +71,12 @@ Output TSV file.
 Contains only general statistics (read structure counts and percentages).
 
 **Usage:** `-t statistics.tsv`
+
 </dd>
 
 <dt>`-2`, `--r2`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** String
@@ -79,10 +87,12 @@ May be uncompressed, gzipped or bzipped.
 If single-end mode, ignore this option.
 
 **Usage:** `-2 input_R2.fastq.gz`
+
 </dd>
 
 <dt>`-j`, `--json`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** String
@@ -92,10 +102,12 @@ Output JSON.GZ file (gzipped JSON).
 Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).
 
 **Usage:** `-j statistics.json.gz`
+
 </dd>
 
 <dt>`-k`, `--kmer-size`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** Non-negative Integer
@@ -104,10 +116,12 @@ Contains extended statistics on pattern sequences, each read or read pair: read 
 Max size of unrecognized sequence to be written as K-mer of certain length.
 
 **Usage:** `-k 9`
+
 </dd>
 
 <dt>`-k`, `--kmer-size`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** Non-negative Integer
@@ -116,10 +130,12 @@ Max size of unrecognized sequence to be written as K-mer of certain length.
 Max size of unrecognized sequence to be written as K-mer of certain length.
 
 **Usage:** `-k 9`
+
 </dd>
 
 <dt>`-u`, `--unrecognized`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** 2-16 small Latin Chars
@@ -128,10 +144,12 @@ Max size of unrecognized sequence to be written as K-mer of certain length.
 Long unrecognized sequences replacement.
 
 **Usage:** `-u genome`
+
 </dd>
 
 <dt>`-m`, `--max-reads`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** Non-negative Integer
@@ -141,10 +159,12 @@ Max reads number to analyze (0 -- no limit).
 Notice that read number bigger than recommended may cause memory overflow.
 
 **Usage:** `-m 1000`
+
 </dd>
 
 <dt>`-f`, `--rate-floor`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** Float from 0 to 1
@@ -153,10 +173,12 @@ Notice that read number bigger than recommended may cause memory overflow.
 Min rate to write read structure into statistics TSV table.
 
 **Usage:** `-f 0.1`
+
 </dd>
 
 <dt>`-@`, `--threads`</dt>
 <dd>
+
 **Required:** No
 
 **Format:** Non-negative integer less than `2 * cpu_count()`
@@ -165,10 +187,12 @@ Min rate to write read structure into statistics TSV table.
 Threads number.
 
 **Usage:** `-@ 10`
+
 </dd>
 
 <dt>`-d`, `--dont-check-read-names`</dt>
 <dd>
+
 **Required:** No
 
 **Description:**
@@ -177,10 +201,12 @@ Use this if you have unusual (non-Illumina) paired read names.
 Makes sense only in paired-end mode.
 
 **Usage:** `-d`
+
 </dd>
 
 <dt>`-l`, `--levenshtein`</dt>
 <dd>
+
 **Required:** No
 
 **Description:**
@@ -189,23 +215,29 @@ Results are written into extended statistics file (JSON.GZ).
 Notice that it highly increases the time of processing.
 
 **Usage:** `-l`
+
 </dd>
 
 <dt>`-h`, `--help`</dt>
 <dd>
+
 **Description:**
 Show help message and exit.
 
 **Usage:** `-h`
+
 </dd>
 
 <dt>`-v`, `--version`</dt>
 <dd>
+
 **Description:**
 Show program's version number and exit.
 
 **Usage:** `-v`
+
 </dd>
+</dl>
 
 ## Examples
 
@@ -326,6 +358,7 @@ Example is shorten.
 				"TextPattern": "{unknown}--{oligme:F}--{oligb:F}--{sevenzeroone:F}--{unknown}"
 			},
 			"R2": "..."
-	}
+		}
+	]
 }
 ```
