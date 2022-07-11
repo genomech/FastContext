@@ -32,14 +32,11 @@ Optional arguments:
 <dt>-1, --r1</dt>
 <dd>
 
-**Required.**
-
-*Format:* String
-
+**Required.**<br>
+*Format:* String<br>
 *Description:*
 FastQ input R1 file.
-May be uncompressed, gzipped or bzipped.
-
+May be uncompressed, gzipped or bzipped.<br>
 *Usage:* `-1 input.fastq.gz`
 
 </dd>
@@ -47,7 +44,7 @@ May be uncompressed, gzipped or bzipped.
 <dt>-p, --patterns</dt>
 <dd>
 
-*Required.*
+**Required.**
 
 *Format:* Plain Javascript Object String (Key-Value).
 Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC.
@@ -172,7 +169,7 @@ Threads number.
 
 </dd>
 
-<dt>`-d`, `--dont-check-read-names`</dt>
+<dt>-d, --dont-check-read-names</dt>
 <dd>
 
 *Description:*
@@ -180,11 +177,11 @@ Don't check read names.
 Use this if you have unusual (non-Illumina) paired read names.
 Makes sense only in paired-end mode.
 
-*Usage:* `-d`
+*Usage:* -d
 
 </dd>
 
-<dt>`-l`, `--levenshtein`</dt>
+<dt>-l, --levenshtein</dt>
 <dd>
 
 *Description:*
@@ -196,13 +193,13 @@ Notice that it highly increases the time of processing.
 
 </dd>
 
-<dt>`-h`, `--help`</dt>
+<dt>-h, --help</dt>
 <dd>
 
 *Description:*
 Show help message and exit.
 
-*Usage:* `-h`
+*Usage:* -h
 
 </dd>
 
@@ -212,7 +209,7 @@ Show help message and exit.
 *Description:*
 Show program's version number and exit.
 
-*Usage:* `-v`
+*Usage:* -v
 
 </dd>
 </dl>
