@@ -6,7 +6,9 @@
 
 ## Description
 
-FastQ Nucleotide Context Statistics Calculation
+FastContext is a tool for identification of adapters and other sequence patterns in the next generation sequencing (NGS) data.
+The algorithm parses FastQ files (in a single-end or paired-end mode), searches read or read pair for user-specified patterns, and then generates a human-readable representation of the search results, which we call "read structure".
+Also FastContext gathers statistics on frequency of occurence for each read structure.
 
 ## Dependencies
 
@@ -308,3 +310,7 @@ Example is shorten.
 	]
 }
 ```
+
+## Citation
+
+Will be soon :)
