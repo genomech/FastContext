@@ -32,7 +32,7 @@ Optional arguments:
 <dt>-1, --r1</dt>
 <dd>
 
-**Required.**<br>
+*Required.* <br>
 *Format:* String<br>
 *Description:*
 FastQ input R1 file.
@@ -44,14 +44,11 @@ May be uncompressed, gzipped or bzipped.<br>
 <dt>-p, --patterns</dt>
 <dd>
 
-**Required.**
-
-*Format:* Plain Javascript Object String (Key-Value).
-Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC.
-
+*Required.* <br>
 *Description:* Patterns to look for.
-The order of patterns is the order of search.
-
+The order of patterns is the order of search.<br>
+*Format:* Plain Javascript Object String (Key-Value).
+Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC.<br>
 *Usage:* `-p '{"first": "CTCAGCGCTGAG", "second": "AAAAAA", "third": "GATC"}'`
 
 </dd>
@@ -59,14 +56,11 @@ The order of patterns is the order of search.
 <dt>-t, --tsv</dt>
 <dd>
 
-**Required.**
-
-*Format:* String
-
+*Required.* <br>
 *Description:*
 Output TSV file.
-Contains only general statistics (read structure counts and percentages).
-
+Contains only general statistics (read structure counts and percentages).<br>
+*Format:* String<br>
 *Usage:* `-t statistics.tsv`
 
 </dd>
@@ -74,13 +68,11 @@ Contains only general statistics (read structure counts and percentages).
 <dt>-2, --r2</dt>
 <dd>
 
-*Format:* String
-
 *Description:*
 FastQ input R2 file.
 May be uncompressed, gzipped or bzipped.
-If single-end mode, ignore this option.
-
+If single-end mode, ignore this option.<br>
+*Format:* String<br>
 *Usage:* `-2 input_R2.fastq.gz`
 
 </dd>
@@ -88,12 +80,10 @@ If single-end mode, ignore this option.
 <dt>-j, --json</dt>
 <dd>
 
-*Format:* String
-
 *Description:*
 Output JSON.GZ file (gzipped JSON).
-Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).
-
+Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).<br>
+*Format:* String<br>
 *Usage:* `-j statistics.json.gz`
 
 </dd>
@@ -101,13 +91,10 @@ Contains extended statistics on pattern sequences, each read or read pair: read 
 <dt>-k, --kmer-size</dt>
 <dd>
 
-*Format:* Non-negative Integer
-
-*Default:* `0`
-
 *Description:*
-Max size of unrecognized sequence to be written as K-mer of certain length.
-
+Max size of unrecognized sequence to be written as K-mer of certain length.<br>
+*Format:* Non-negative Integer<br>
+*Default:* `0` <br>
 *Usage:* `-k 9`
 
 </dd>
@@ -115,13 +102,10 @@ Max size of unrecognized sequence to be written as K-mer of certain length.
 <dt>-u, --unrecognized</dt>
 <dd>
 
-*Format:* 2-16 small Latin Chars
-
-*Default:* `unknown`
-
 *Description:*
-Long unrecognized sequences replacement.
-
+Long unrecognized sequences replacement.<br>
+*Format:* 2-16 small Latin Chars<br>
+*Default:* `unknown` <br>
 *Usage:* `-u genome`
 
 </dd>
@@ -129,14 +113,11 @@ Long unrecognized sequences replacement.
 <dt>-m, --max-reads</dt>
 <dd>
 
-*Format:* Non-negative Integer
-
-*Default:* `1000000`
-
 *Description:*
 Max reads number to analyze (0 -- no limit).
-Notice that read number bigger than recommended may cause memory overflow.
-
+Notice that read number bigger than recommended may cause memory overflow.<br>
+*Format:* Non-negative Integer<br>
+*Default:* `1000000` <br>
 *Usage:* `-m 1000`
 
 </dd>
@@ -144,13 +125,10 @@ Notice that read number bigger than recommended may cause memory overflow.
 <dt>-f, --rate-floor</dt>
 <dd>
 
-*Format:* Float from 0 to 1
-
-*Default:* `0.001`
-
 *Description:*
-Min rate to write read structure into statistics TSV table.
-
+Min rate to write read structure into statistics TSV table.<br>
+*Format:* Float from 0 to 1<br>
+*Default:* `0.001` <br>
 *Usage:* `-f 0.1`
 
 </dd>
@@ -158,13 +136,10 @@ Min rate to write read structure into statistics TSV table.
 <dt>-@, --threads</dt>
 <dd>
 
-*Format:* Non-negative integer less than `2 * cpu_count()`
-
-*Default:* `cpu_count()`
-
 *Description:*
-Threads number.
-
+Threads number.<br>
+*Format:* Non-negative integer less than `2 * cpu_count()` <br>
+*Default:* `cpu_count()` <br>
 *Usage:* `-@ 10`
 
 </dd>
@@ -175,9 +150,8 @@ Threads number.
 *Description:*
 Don't check read names.
 Use this if you have unusual (non-Illumina) paired read names.
-Makes sense only in paired-end mode.
-
-*Usage:* -d
+Makes sense only in paired-end mode.<br>
+*Usage:* `-d`
 
 </dd>
 
@@ -187,8 +161,7 @@ Makes sense only in paired-end mode.
 *Description:*
 Calculate patterns Levenshtein distances for each position in read.
 Results are written into extended statistics file (JSON.GZ).
-Notice that it highly increases the time of processing.
-
+Notice that it highly increases the time of processing.<br>
 *Usage:* `-l`
 
 </dd>
@@ -197,19 +170,17 @@ Notice that it highly increases the time of processing.
 <dd>
 
 *Description:*
-Show help message and exit.
-
-*Usage:* -h
+Show help message and exit.<br>
+*Usage:* `-h`
 
 </dd>
 
-<dt>`-v`, `--version`</dt>
+<dt>-v, --version</dt>
 <dd>
 
 *Description:*
-Show program's version number and exit.
-
-*Usage:* -v
+Show program's version number and exit.<br>
+*Usage:* `-v`
 
 </dd>
 </dl>
