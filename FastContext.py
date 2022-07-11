@@ -207,7 +207,7 @@ def ThreadsNumCheck(ThreadsNum):
 	# Check positivity
 	if ThreadsNum <= 0: raise ValueError(f'Threads number must be positive: {ThreadsNum}')
 	# Warn if there is more threads than cores
-	if GLOBAL_THREADS * 2 > ThreadsNum > GLOBAL_THREADS: warnings.warn(f'Threads number ({ThreadsNum}) is bigger than CPU count on your device ({GLOBAL_THREADS}). It may impact performance.', RuntimeWarning)
+	if (GLOBAL_THREADS * 2) > ThreadsNum > GLOBAL_THREADS: warnings.warn(f'Threads number ({ThreadsNum}) is bigger than CPU count on your device ({GLOBAL_THREADS}). It may impact performance.', RuntimeWarning)
 	# If threads number is much more than cores number, go on strike
 	if ThreadsNum > GLOBAL_THREADS * 2: raise ValueError(f'Threads number is too big: {ThreadsNum}')
 
@@ -276,11 +276,11 @@ def AnalyzeSequence(Read, ToolKit):
 		Sequence = Sequence.replace('}{', '},{')
 		Sequence = f'[{Sequence}]'
 		# Load JSON string
-		Read[Type]['Pattern'] = json.loads(Sequence)
+		Read[Type]['ReadStructure'] = json.loads(Sequence)
 		# Create human-readable and machine-countable text pattern from dictionary
 		# It will be used while calculating statistics
 		TextPattern = list()
-		for Sector in Read[Type]['Pattern']:
+		for Sector in Read[Type]['ReadStructure']:
 			if Sector['type'] == 'unrecognized': TextSector = str(GLOBAL_UNRECOGNIZED)
 			elif Sector['type'] == 'pattern':
 				if Sector['strand'] is None: TextSector = str(Sector['name'])
@@ -289,7 +289,7 @@ def AnalyzeSequence(Read, ToolKit):
 			TextPattern.append(str(TextSector))
 		TextPattern = '--'.join([f'{{{pat}}}' for pat in TextPattern])
 		# Write text pattern to stats
-		Read[Type]['TextPattern'] = str(TextPattern)
+		Read[Type]['TextReadStructure'] = str(TextPattern)
 	# Return annotated read or read pair
 	return Read
 
@@ -297,18 +297,18 @@ def AnalyzeSequence(Read, ToolKit):
 
 # Count Summary
 def SummaryCount(Statistics, Tag):
-	Counts = Counter([item[Tag]['TextPattern'] for item in Statistics['RawDataset']])
-	return { Key: { 'Count': Value, 'Rate': Value / Statistics['ReadsAnalyzed'] } for Key, Value in Counts.items() }
+	Counts = Counter([item[Tag]['TextReadStructure'] for item in Statistics['RawDataset']])
+	return { Key: { 'Count': Value, 'Percentage': Value / Statistics['ReadsAnalyzed'] } for Key, Value in Counts.items() }
 
 # Create TSV table from Summary
 def Summary2Table(Summary, RateFloor):
 	Table = pandas.DataFrame(Summary).transpose().reset_index()
 	# Filter by rate floor and sort by rate
-	Table = Table[Table['Rate'] >= RateFloor].sort_values(by=['Rate'], ascending=False)
+	Table = Table[Table['Percentage'] >= RateFloor].sort_values(by=['Percentage'], ascending=False)
 	Table['Count'] = Table['Count'].apply(int)
 	# Calculate percentage
-	Table['Rate'] = Table['Rate'].apply(lambda x: x * 100)
-	Table = Table[['Count', 'Rate', 'index']].rename(columns = {'index': 'Pattern'})
+	Table['Percentage'] = Table['Percentage'].apply(lambda x: x * 100)
+	Table = Table[['Count', 'Percentage', 'index']].rename(columns = {'index': 'ReadStructure'})
 	# Return TSV as string
 	return Table.to_csv(sep='\t', index=False)
 

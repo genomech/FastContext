@@ -29,212 +29,190 @@ python3 -m pip install argparse biopython pandas python-Levenshtein tqdm
 Optional arguments:
 
 <dl>
-<dt>`-1`, `--r1`</dt>
+<dt>-1, --r1</dt>
 <dd>
 
-**Required:** <font color=red>Yes</font>
+**Required.**
 
-**Format:** String
+*Format:* String
 
-**Description:**
+*Description:*
 FastQ input R1 file.
 May be uncompressed, gzipped or bzipped.
 
-**Usage:** `-1 input.fastq.gz`
+*Usage:* `-1 input.fastq.gz`
 
 </dd>
 
-<dt>`-p`, `--patterns`</dt>
+<dt>-p, --patterns</dt>
 <dd>
 
-**Required:** <font color=red>Yes</font>
+*Required.*
 
-**Format:** Plain Javascript Object String (Key-Value)
-
-**Description:** Patterns to look for.
+*Format:* Plain Javascript Object String (Key-Value).
 Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC.
+
+*Description:* Patterns to look for.
 The order of patterns is the order of search.
 
-**Usage:** `-p '{"first": "CTCAGCGCTGAG", "second": "AAAAAA", "third": "GATC"}'`
+*Usage:* `-p '{"first": "CTCAGCGCTGAG", "second": "AAAAAA", "third": "GATC"}'`
 
 </dd>
 
-<dt>`-t`, `--tsv`</dt>
+<dt>-t, --tsv</dt>
 <dd>
 
-**Required:** <font color=red>Yes</font>
+**Required.**
 
-**Format:** String
+*Format:* String
 
-**Description:**
+*Description:*
 Output TSV file.
 Contains only general statistics (read structure counts and percentages).
 
-**Usage:** `-t statistics.tsv`
+*Usage:* `-t statistics.tsv`
 
 </dd>
 
-<dt>`-2`, `--r2`</dt>
+<dt>-2, --r2</dt>
 <dd>
 
-**Required:** No
+*Format:* String
 
-**Format:** String
-
-**Description:**
+*Description:*
 FastQ input R2 file.
 May be uncompressed, gzipped or bzipped.
 If single-end mode, ignore this option.
 
-**Usage:** `-2 input_R2.fastq.gz`
+*Usage:* `-2 input_R2.fastq.gz`
 
 </dd>
 
-<dt>`-j`, `--json`</dt>
+<dt>-j, --json</dt>
 <dd>
 
-**Required:** No
+*Format:* String
 
-**Format:** String
-
-**Description:**
+*Description:*
 Output JSON.GZ file (gzipped JSON).
 Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).
 
-**Usage:** `-j statistics.json.gz`
+*Usage:* `-j statistics.json.gz`
 
 </dd>
 
-<dt>`-k`, `--kmer-size`</dt>
+<dt>-k, --kmer-size</dt>
 <dd>
 
-**Required:** No
+*Format:* Non-negative Integer
 
-**Format:** Non-negative Integer
+*Default:* `0`
 
-**Description:**
+*Description:*
 Max size of unrecognized sequence to be written as K-mer of certain length.
 
-**Usage:** `-k 9`
+*Usage:* `-k 9`
 
 </dd>
 
-<dt>`-k`, `--kmer-size`</dt>
+<dt>-u, --unrecognized</dt>
 <dd>
 
-**Required:** No
+*Format:* 2-16 small Latin Chars
 
-**Format:** Non-negative Integer
+*Default:* `unknown`
 
-**Description:**
-Max size of unrecognized sequence to be written as K-mer of certain length.
-
-**Usage:** `-k 9`
-
-</dd>
-
-<dt>`-u`, `--unrecognized`</dt>
-<dd>
-
-**Required:** No
-
-**Format:** 2-16 small Latin Chars
-
-**Description:**
+*Description:*
 Long unrecognized sequences replacement.
 
-**Usage:** `-u genome`
+*Usage:* `-u genome`
 
 </dd>
 
-<dt>`-m`, `--max-reads`</dt>
+<dt>-m, --max-reads</dt>
 <dd>
 
-**Required:** No
+*Format:* Non-negative Integer
 
-**Format:** Non-negative Integer
+*Default:* `1000000`
 
-**Description:**
+*Description:*
 Max reads number to analyze (0 -- no limit).
 Notice that read number bigger than recommended may cause memory overflow.
 
-**Usage:** `-m 1000`
+*Usage:* `-m 1000`
 
 </dd>
 
-<dt>`-f`, `--rate-floor`</dt>
+<dt>-f, --rate-floor</dt>
 <dd>
 
-**Required:** No
+*Format:* Float from 0 to 1
 
-**Format:** Float from 0 to 1
+*Default:* `0.001`
 
-**Description:**
+*Description:*
 Min rate to write read structure into statistics TSV table.
 
-**Usage:** `-f 0.1`
+*Usage:* `-f 0.1`
 
 </dd>
 
-<dt>`-@`, `--threads`</dt>
+<dt>-@, --threads</dt>
 <dd>
 
-**Required:** No
+*Format:* Non-negative integer less than `2 * cpu_count()`
 
-**Format:** Non-negative integer less than `2 * cpu_count()`
+*Default:* `cpu_count()`
 
-**Description:**
+*Description:*
 Threads number.
 
-**Usage:** `-@ 10`
+*Usage:* `-@ 10`
 
 </dd>
 
 <dt>`-d`, `--dont-check-read-names`</dt>
 <dd>
 
-**Required:** No
-
-**Description:**
+*Description:*
 Don't check read names.
 Use this if you have unusual (non-Illumina) paired read names.
 Makes sense only in paired-end mode.
 
-**Usage:** `-d`
+*Usage:* `-d`
 
 </dd>
 
 <dt>`-l`, `--levenshtein`</dt>
 <dd>
 
-**Required:** No
-
-**Description:**
+*Description:*
 Calculate patterns Levenshtein distances for each position in read.
 Results are written into extended statistics file (JSON.GZ).
 Notice that it highly increases the time of processing.
 
-**Usage:** `-l`
+*Usage:* `-l`
 
 </dd>
 
 <dt>`-h`, `--help`</dt>
 <dd>
 
-**Description:**
+*Description:*
 Show help message and exit.
 
-**Usage:** `-h`
+*Usage:* `-h`
 
 </dd>
 
 <dt>`-v`, `--version`</dt>
 <dd>
 
-**Description:**
+*Description:*
 Show program's version number and exit.
 
-**Usage:** `-v`
+*Usage:* `-v`
 
 </dd>
 </dl>
@@ -247,7 +225,7 @@ Contains counts, percentage and read structures.
 Length of K-mer or pattern strand (**F**orward or **R**everse) is displayed after the comma.
 
 	# R1
-	Count	Rate	Pattern
+	Count	Percentage	ReadStructure
 	5197	48.807287753568744	{unknown}
 	3297	30.963561232156273	{unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}
 	114	1.0706235912847484	{unknown}--{oligb:F}--{701:F}--{unknown}
@@ -256,7 +234,7 @@ Length of K-mer or pattern strand (**F**orward or **R**everse) is displayed afte
 	60	0.5634861006761833	{unknown}--{oligme:F}--{oligb:F}--{701:F}--{kmer:14bp}
 	
 	# R2
-	Count	Rate	Pattern
+	Count	Percentage	ReadStructure
 	7545	70.85837716003005	{unknown}
 	616	5.785123966942149	{unknown}--{oligme:F}--{oliga:R}--{502:R}--{unknown}
 	540	5.07137490608565	{unknown}--{oligme:F}--{unknown}
@@ -348,14 +326,14 @@ Example is shorten.
 						"values":[12,13,13,12,12,14,16,15,14,14,13,13,13,"...",NaN,NaN,NaN,NaN,NaN]
 					}
 				],
-				"Pattern": [
+				"ReadStructure": [
 					{ "type": "unrecognized" },
 					{ "type": "pattern", "name": "oligme", "strand": "F" },
 					{ "type": "pattern", "name": "oligb", "strand": "F" },
 					{ "type": "pattern", "name": "701", "strand": "F" },
 					{ "type": "unrecognized" }
 				],
-				"TextPattern": "{unknown}--{oligme:F}--{oligb:F}--{sevenzeroone:F}--{unknown}"
+				"TextReadStructure": "{unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}"
 			},
 			"R2": "..."
 		}

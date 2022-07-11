@@ -1,5 +1,5 @@
 # R1
-Count	Rate	Pattern
+Count	Percentage	ReadStructure
 5197	48.807287753568744	{unknown}
 3297	30.963561232156273	{unknown}--{oligme:F}--{oligb:F}--{sevenzeroone:F}--{unknown}
 114	1.0706235912847484	{unknown}--{oligb:F}--{sevenzeroone:F}--{unknown}
@@ -53,7 +53,7 @@ Count	Rate	Pattern
 12	0.11269722013523666	{unknown}--{fivezerotwo:R}--{unknown}
 
 # R2
-Count	Rate	Pattern
+Count	Percentage	ReadStructure
 7545	70.85837716003005	{unknown}
 616	5.785123966942149	{unknown}--{oligme:F}--{oliga:R}--{fivezerotwo:R}--{unknown}
 540	5.07137490608565	{unknown}--{oligme:F}--{unknown}
