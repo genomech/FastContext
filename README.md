@@ -55,15 +55,15 @@ Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences mu
 
 </dd>
 
-<dt>-t, --tsv</dt>
+<dt>-s, --summary</dt>
 <dd>
 
 *Required.* <br>
 *Description:*
-Output TSV file.
-Contains only general statistics (read structure counts and percentages).<br>
+Output HTML file.
+Contains statistics summary in human-readable form.<br>
 *Format:* String<br>
-*Usage:* `-t statistics.tsv`
+*Usage:* `-f statistics.htm`
 
 </dd>
 
@@ -189,31 +189,37 @@ Show program's version number and exit.<br>
 
 ## Examples
 
-### General statistics TSV file
+### Summary statistics table
 
 Contains counts, percentage and read structures.
 Length of K-mer or pattern strand (**F**orward or **R**everse) is displayed after the comma.
 
-	# R1
-	Count	Percentage	ReadStructure
-	5197	48.807287753568744	{unknown}
-	3297	30.963561232156273	{unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}
-	114	1.0706235912847484	{unknown}--{oligb:F}--{701:F}--{unknown}
-	71	0.6667918858001503	{unknown}--{oligme:F}--{unknown}
-	69	0.6480090157776108	{unknown}--{oligme:F}--{unknown}--{701:F}--{unknown}
-	60	0.5634861006761833	{unknown}--{oligme:F}--{oligb:F}--{701:F}--{kmer:14bp}
-	
-	# R2
-	Count	Percentage	ReadStructure
-	7545	70.85837716003005	{unknown}
-	616	5.785123966942149	{unknown}--{oligme:F}--{oliga:R}--{502:R}--{unknown}
-	540	5.07137490608565	{unknown}--{oligme:F}--{unknown}
-	441	4.141622839969948	{unknown}--{oligme:F}--{oliga:R}--{unknown}
-	298	2.798647633358377	{unknown}--{oliga:R}--{unknown}
-	263	2.469947407963937	{unknown}--{502:R}--{unknown}
-	233	2.188204357625845	{unknown}--{oligme:F}--{kmer:14bp}--{502:R}--{unknown}
-	163	1.5308039068369648	{unknown}--{oliga:R}--{502:R}--{unknown}
-	56	0.5259203606311045	{unknown}--{502:F}--{unknown}
+Example:
+
+#### R1
+
+| Count | Percentage | Read Structure                                         |
+|------:|-----------:|:-------------------------------------------------------|
+| 5,197 |     48.807 | {unknown}                                              |
+| 3,297 |     30.963 | {unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}   |
+|   114 |      1.070 | {unknown}--{oligb:F}--{701:F}--{unknown}               |
+|    71 |      0.666 | {unknown}--{oligme:F}--{unknown}                       |
+|    69 |      0.648 | {unknown}--{oligme:F}--{unknown}--{701:F}--{unknown}   |
+|    60 |      0.563 | {unknown}--{oligme:F}--{oligb:F}--{701:F}--{kmer:14bp} |
+
+#### R2
+
+| Count | Percentage | Read Structure                                         |
+|------:|-----------:|:-------------------------------------------------------|
+| 7,545 |     70.858 | {unknown}                                              |
+|   616 |      5.785 | {unknown}--{oligme:F}--{oliga:R}--{502:R}--{unknown}   |
+|   540 |      5.071 | {unknown}--{oligme:F}--{unknown}                       |
+|   441 |      4.141 | {unknown}--{oligme:F}--{oliga:R}--{unknown}            |
+|   298 |      2.798 | {unknown}--{oliga:R}--{unknown}                        |
+|   263 |      2.469 | {unknown}--{502:R}--{unknown}                          |
+|   233 |      2.188 | {unknown}--{oligme:F}--{kmer:14bp}--{502:R}--{unknown} |
+|   163 |      1.530 | {unknown}--{oliga:R}--{502:R}--{unknown}               |
+|    56 |      0.525 | {unknown}--{502:F}--{unknown}                          |
 
 ### Extended statistics JSON.GZ file
 
@@ -225,87 +231,108 @@ Example is shorten.
 	"FastQ": {
 		"R1": "tests/standard_test_R1.fastq.gz",
 		"R2": "tests/standard_test_R2.fastq.gz"
-		},
-	"ReadType": "Paired-end",
-	"ReadsAnalyzed": 100,
-	"MaxReads": 100,
-	"Performance": {
-		"Threads": 12,
-		"Started": "2022-07-07T20:30:11.503120",
-		"Finished": "2022-07-07T20:30:11.680769" },
-	"Patterns": {
-		"oligme": { "F": "CTGTCTCTTATACACATCT", "R": "AGATGTGTATAAGAGACAG", "Length": 19},
-		"502": {"F": "CTCTCTAT", "R": "ATAGAGAG", "Length": 8 }
 	},
-	"KmerMaxSize": 15,
-	"RateFloor": 0.001,
-	"UnrecognizedSequence": "unknown",
-	"PatternsLevenshtein": [
-		{
-			"Analysis": "reverse complement only",
-			"FirstPattern": "oligme",
-			"SecondPattern": "oligme",
-			"FirstLength": 19,
-			"SecondLength": 19,
-			"LevenshteinAbsolute": 11,
-			"LevenshteinSimilarity": 0.42105263157894735,
-			"Type":"good",
-			"Risk":"low"
+	"RunData": {
+		"Read Type": "Paired-end",
+		"Max Reads": 100,
+		"Rate Floor": 0.001
+	},
+	"Performance": {
+		"Reads Analyzed": 100,
+		"Threads": 4,
+		"Started": "2022-07-13T18:15:48.277660",
+		"Finished": "2022-07-13T18:15:48.964721"
+	},
+	"PatternsData": {
+		"PatternsList": {
+			"oligme": {
+				"F": "CTGTCTCTTATACACATCT",
+				"R": "AGATGTGTATAAGAGACAG",
+				"Length": 19
+			},
+			"s502": {
+				"F": "CTCTCTAT",
+				"R": "ATAGAGAG",
+				"Length": 8
+			}
 		},
-		{
-			"Analysis": "full",
-			"FirstPattern": "oligme",
-			"SecondPattern": "502",
-			"FirstLength": 19,
-			"SecondLength": 8,
-			"LevenshteinAbsolute": 2,
-			"LevenshteinSimilarity": 0.75,
-			"Type": "nested",
-			"Risk":"medium"
+		"PatternsAnalysis": [
+			{
+				"Analysis": "reverse complement only",
+				"FirstPattern": "oligme",
+				"SecondPattern": "oligme",
+				"FirstLength": 19,
+				"SecondLength": 19,
+				"LevenshteinAbsolute": 11,
+				"LevenshteinSimilarity": 0.42105263157894735,
+				"Type": "good",
+				"Risk": "low"
+			},
+			{
+				"Analysis": "full",
+				"FirstPattern": "oligme",
+				"SecondPattern": "s502",
+				"FirstLength": 19,
+				"SecondLength": 8,
+				"LevenshteinAbsolute": 2,
+				"LevenshteinSimilarity": 0.75,
+				"Type": "nested",
+				"Risk": "medium"
+			}
+		],
+		"Other": {
+			"Unrecognized Sequence": "unknown",
+			"K-mer Max Size": 15
 		}
-	],
+	},
 	"Summary": {
 		"R1": {
-			"{unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}": { "Count": 34, "Rate": 0.34 },
-			"{unknown}--{oligme:F}--{unknown}--{701:F}--{unknown}": {"Count": 1, "Rate": 0.01 },
-			"{unknown}--{701:F}--{unknown}": { "Count": 1, "Rate" :0.01 }
+			"{unknown}--{oligme:F}--{oligb:F}--{s701:F}--{unknown}": {
+				"Count": 34,
+				"Percentage": 34.0,
+				"ReadStructure": [
+					{ "type": "unrecognized" },
+					{ "type": "pattern", "name": "oligme", "strand": "F" },
+					{ "type": "pattern", "name": "oligb", "strand": "F" },
+					{ "type": "pattern", "name": "s701", "strand": "F" },
+					{ "type": "unrecognized" }
+				]
+			},
+			"{unknown}--{oligme:F}--{unknown}--{s701:F}--{unknown}": [ "..." ],
+			"{unknown}--{s701:F}--{unknown}": [ "..." ]
 		},
-		"R2": {
-			"{unknown}": {"Count": 83, "Rate": 0.83},
-			"{unknown}--{502:R}--{unknown}": { "Count": 4, "Rate": 0.04},
-			"{unknown}--{oligme:F}": { "Count": 1, "Rate": 0.01}
-		}
+		"R2": [ "..." ]
 	},
 	"RawDataset": [
 		{
-			"Name": "M02435:112:000000000-DFC9M:1:1101:16174:1450",
+			"Name": "M02435:112:000000000-DFC9M:1:1101:14970:1484",
 			"R1": {
-				"Sequence": "GTTTAGCTGCAAGCAGGTTTTGTTTTGTGTTAGGGA...TCGTATGCCGTCTTCTGCTTGAAAAAAAAAA",
-				"PhredQual": [18,29,32,32,33,37,33,37,37,33,37,37,"...",38,38,37,37,13,12,24,24,12,12],
-				"Levenshtein":[
+				"Sequence": "ACCTAGAAGAGCCAAAAGACTCT...AATCTCGTATGCCGTCT",
+				"PhredQual": [29,32,32,33,33,37,37,37,37,"...",38,38,38,13],
+				"Levenshtein": [
 					{
 						"name": "oligme",
 						"strand": "F",
 						"length": 19,
-						"values": [11,11,12,13,14,14,13,14,15,13,14,13,13,"...",NaN,NaN,NaN,NaN,NaN]
+						"values": [14,14,12,13,12,12,12,"...",NaN,NaN,NaN]
 					},
 					{
 						"name": "oligme",
 						"strand": "R",
 						"length": 19,
-						"values":[12,13,13,12,12,14,16,15,14,14,13,13,13,"...",NaN,NaN,NaN,NaN,NaN]
+						"values": [12,11,10,9,9,9,10,10,"...",NaN,NaN,NaN]
 					}
 				],
 				"ReadStructure": [
 					{ "type": "unrecognized" },
 					{ "type": "pattern", "name": "oligme", "strand": "F" },
 					{ "type": "pattern", "name": "oligb", "strand": "F" },
-					{ "type": "pattern", "name": "701", "strand": "F" },
+					{ "type": "pattern", "name": "s701", "strand": "F" },
 					{ "type": "unrecognized" }
 				],
-				"TextReadStructure": "{unknown}--{oligme:F}--{oligb:F}--{701:F}--{unknown}"
+				"TextReadStructure": "{unknown}--{oligme:F}--{oligb:F}--{s701:F}--{unknown}"
 			},
-			"R2": "..."
+			"R2": "..." 
 		}
 	]
 }

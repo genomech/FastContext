@@ -1,0 +1,77 @@
+<html>
+<head>
+<link href="https://fonts.googleapis.com/css2?family=Inconsolata" rel="stylesheet">
+<title>FastContext Analysis Report
+</title>
+<style>
+body { font-family: "Inconsolata", monospace; width: 1200px; }
+table, td, th { border: 1px solid #000000; }
+table { width: 100%; border-collapse: collapse; } 
+td, th { padding: 8px; }
+th { background-color: #bec3c9; color: #000000; font-weight: 700; }
+.simple-table-key { background-color: #bec3c9; color: #000000; font-weight: 700; width: 25%; }
+.simple-table-value { background-color: #ffffff; color: #000000; }
+.row-number { background-color: #bec3c9; color: #000000; font-weight: 700; }
+.number-cell { text-align: right; }
+.pattern-sequence { font-weight: 700; }
+.risk { color: #ffffff; }
+.risk-empty { background-color: #ffffff; }
+.risk-low { background-color: #00a400; }
+.risk-medium { background-color: #ffba00; }
+.risk-high { background-color: #fa383e; }
+.risk-full { background-color: #000000; }
+</style>
+</head>
+<body>
+<h1>FastContext Analysis Report</h1>
+<h2>Run Data</h2>
+<table class="simple-table">
+<tbody>
+<tr><td class="simple-table-key">Read</td><td class="simple-table-value">/datasets/MyDocs/Cloud/Core/FastContext/tests/gzipped_normal_R1.fastq.gz</td></tr>
+<tr><td class="simple-table-key">Read Type</td><td class="simple-table-value">Single-end</td></tr>
+<tr><td class="simple-table-key">Max Reads</td><td class="simple-table-value">1,000,000</td></tr>
+<tr><td class="simple-table-key">Rate Floor</td><td class="simple-table-value">0.999</td></tr>
+</tbody>
+</table>
+<h2>Performance</h2>
+<table class="simple-table">
+<tbody>
+<tr><td class="simple-table-key">Reads Analyzed</td><td class="simple-table-value">100</td></tr>
+<tr><td class="simple-table-key">Threads</td><td class="simple-table-value">4</td></tr>
+<tr><td class="simple-table-key">Started</td><td class="simple-table-value">2022-07-13T18:15:11.056256</td></tr>
+<tr><td class="simple-table-key">Finished</td><td class="simple-table-value">2022-07-13T18:15:11.221948</td></tr>
+</tbody>
+</table>
+<h2>Patterns</h2>
+<h3>Patterns List</h3>
+<table class="patterns-list"><thead>
+<tr><th>#</th><th>Pattern Name</th><th>Forward Strand</th><th>Reverse Strand</th><th>Length [bp]</th></tr>
+</thead>
+<tbody>
+<tr><td class="row-number number-cell">1</td><td>foo</td><td class="pattern-sequence"><span style="color: #3578e5;">C</span><span style="color: #fa383e;">T</span><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #3578e5;">C</span><span style="color: #fa383e;">T</span><span style="color: #3578e5;">C</span><span style="color: #fa383e;">T</span><span style="color: #fa383e;">T</span><span style="color: #00a400;;">A</span><span style="color: #fa383e;">T</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span></td><td class="pattern-sequence"><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #00a400;;">A</span><span style="color: #fa383e;">T</span><span style="color: #00a400;;">A</span><span style="color: #00a400;;">A</span><span style="color: #e6a700;">G</span><span style="color: #00a400;;">A</span><span style="color: #e6a700;">G</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span><span style="color: #00a400;;">A</span><span style="color: #e6a700;">G</span></td><td class="number-cell">15</td></tr>
+<tr><td class="row-number number-cell">2</td><td>bar</td><td class="pattern-sequence"><span style="color: #3578e5;">C</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #00a400;;">A</span><span style="color: #00a400;;">A</span><span style="color: #00a400;;">A</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span></td><td class="pattern-sequence"><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #fa383e;">T</span><span style="color: #fa383e;">T</span><span style="color: #fa383e;">T</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #e6a700;">G</span></td><td class="number-cell">11</td></tr>
+<tr><td class="row-number number-cell">3</td><td>baz</td><td class="pattern-sequence"><span style="color: #fa383e;">T</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #fa383e;">T</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #e6a700;">G</span><span style="color: #e6a700;">G</span></td><td class="pattern-sequence"><span style="color: #3578e5;">C</span><span style="color: #3578e5;">C</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #00a400;;">A</span><span style="color: #3578e5;">C</span><span style="color: #e6a700;">G</span><span style="color: #00a400;;">A</span></td><td class="number-cell">8</td></tr>
+</tbody>
+</table>
+<h3>Patterns Analysis</h3>
+<table class="patterns-analysis"><thead>
+<tr><th>-</th><th>foo</th><th>bar</th><th>baz</th></tr>
+</thead>
+<tbody>
+<tr><td class="row-number">foo</td><td class="risk risk-low">good</td><td class="risk risk-low">good</td><td class="risk risk-low">good</td></tr>
+<tr><td class="row-number">bar</td><td class="risk-empty">-</td><td class="risk risk-low">good</td><td class="risk risk-low">good</td></tr>
+<tr><td class="row-number">baz</td><td class="risk-empty">-</td><td class="risk-empty">-</td><td class="risk risk-low">good</td></tr>
+</tbody>
+</table>
+<h3>Other</h3>
+<table class="simple-table">
+<tbody>
+<tr><td class="simple-table-key">Unrecognized Sequence</td><td class="simple-table-value">unknown</td></tr>
+<tr><td class="simple-table-key">K-mer Max Size</td><td class="simple-table-value">0</td></tr>
+</tbody>
+</table>
+<h2>Summary</h2>
+<h3>Read</h3>
+<p>Table is empty!</p>
+</body>
+</html>

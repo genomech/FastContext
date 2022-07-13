@@ -223,7 +223,7 @@ def CreateParser():
 	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file. May be uncompressed, gzipped or bzipped. Required.')
 	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f' FastQ input R2 file. May be uncompressed, gzipped or bzipped. If single-end mode, ignore this option.')
 	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for. Plain Javascript Object String (Key-Value), e.g. \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. The order of patterns is the order of search. Required.')
-	Default_parser.add_argument ('-t', '--tsv', required = True, type = str, dest = 'OutputTSV', help = f'Output TSV file. Contains only general statistics (read structure counts and percentages). Required')
+	Default_parser.add_argument ('-s', '--summary', required = True, type = str, dest = 'OutputHTML', help = f'Output HTML file. Contains statistics summary in human-readable form. Required')
 	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON). Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).')
 	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max size of unrecognized sequence to be written as K-mer of certain length. Non-negative integer. Default = {GLOBAL_KMER_SIZE}')
 	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. 2-16 small Latin chars. Default = "{GLOBAL_UNRECOGNIZED}"')
@@ -297,9 +297,15 @@ def AnalyzeSequence(Read, ToolKit):
 
 # Count Summary
 def SummaryCount(Statistics, Tag):
-	Counts = Counter([item[Tag]['TextReadStructure'] for item in Statistics['RawDataset']])
-	return { Key: { 'Count': Value, 'Percentage': Value / Statistics['ReadsAnalyzed'] } for Key, Value in Counts.items() }
-
+	Counts = {}
+	for Item in tqdm.tqdm(Statistics['RawDataset'], total = len(Statistics['RawDataset']), desc = f'Read structures counted [{Tag}]'):
+		try:
+			Counts[Item[Tag]['TextReadStructure']]['Count'] += 1
+		except KeyError:
+			Counts[str(Item[Tag]['TextReadStructure'])] = { 'Count': 1, 'ReadStructure': Item[Tag]['ReadStructure'] }
+	
+	return { Key: { 'Count': int(Value['Count']), 'Percentage': float(Value['Count'] / Statistics['Performance']['Reads Analyzed'] * 100), 'ReadStructure': Value['ReadStructure'] } for Key, Value in Counts.items() }
+	
 # Create TSV table from Summary
 def Summary2Table(Summary, RateFloor):
 	Table = pandas.DataFrame(Summary).transpose().reset_index()
@@ -311,6 +317,147 @@ def Summary2Table(Summary, RateFloor):
 	Table = Table[['Count', 'Percentage', 'index']].rename(columns = {'index': 'ReadStructure'})
 	# Return TSV as string
 	return Table.to_csv(sep='\t', index=False)
+
+## ------======| VISUALIZATION |======------
+
+def RenderInt(Int): return f'{int(Int):,}'
+
+def RenderFloat(Float): return '<0.001' if Float < 0.001 else f'{Float:.3f}'
+
+def ColorSequence(Sequence):
+	Result = []
+	Color = {'A': '#00a400;', 'T': '#fa383e', 'C': '#3578e5', 'G': '#e6a700'}
+	for Char in Sequence: Result.append(f'<span style="color: {Color[Char]};">{Char}</span>')
+	return ''.join(Result)
+
+def MakeSimpleTable(Data):
+	Result = [
+		'<table class="simple-table">',
+		'<tbody>'
+	]
+	for Key, Value in Data.items():
+		if type(Value) == int: Value = RenderInt(Value)
+		Result.append(f'<tr><td class="simple-table-key">{Key}</td><td class="simple-table-value">{Value}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakePatternsList(Data):
+	Result = [
+		'<table class="patterns-list">'
+		'<thead>',
+		'<tr><th>#</th><th>Pattern Name</th><th>Forward Strand</th><th>Reverse Strand</th><th>Length [bp]</th></tr>',
+		'</thead>',
+		'<tbody>'
+	]
+	for Index, Details in enumerate(Data.items()):
+		Result.append(f'<tr><td class="row-number number-cell">{Index + 1}</td><td>{Details[0]}</td><td class="pattern-sequence">{ColorSequence(Details[1]["F"])}</td><td class="pattern-sequence">{ColorSequence(Details[1]["R"])}</td><td class="number-cell">{Details[1]["Length"]}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakePatternsAnalysisTable(Data, Patterns):
+	Result = [
+		'<table class="patterns-analysis">'
+		'<thead>'
+	]
+	HeaderList = ['<tr>', '<th>-</th>']
+	for Item in Patterns: HeaderList.append(f'<th>{Item}</th>')
+	HeaderList.append('</tr>')
+	Result.append(''.join(HeaderList))
+	Result.append('</thead>')
+	Result.append('<tbody>')
+	
+	PatternsAnalysisTable = pandas.DataFrame(Data)
+	PatternsAnalysisTable['Dict'] = PatternsAnalysisTable.apply(dict, axis=1)
+	PatternsAnalysisTable = PatternsAnalysisTable.set_index(['FirstPattern', 'SecondPattern'])['Dict'].unstack()
+	PatternsAnalysisTable = PatternsAnalysisTable[Patterns.keys()].transpose()[Patterns.keys()].transpose()
+	for Index, Line in PatternsAnalysisTable.iterrows():
+		LineList = ['<tr>', f'<td class="row-number">{Index}</td>']
+		for Cell in Line: 
+			if Cell != Cell: LineList.append('<td class="risk-empty">-</td>')
+			else: LineList.append(f'<td class="risk risk-{Cell["Risk"]}">{Cell["Type"]}</td>')
+		LineList.append('</tr>')
+		Result.append(''.join(LineList))
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakeSummaryList(Data, RateFloor):
+	Result = [
+		'<table class="summary-list">'
+		'<thead>',
+		'<tr><th>Count</th><th>Percentage</th><th>Read Structure</th></tr>',
+		'</thead>',
+		'<tbody>'
+	]
+	SummaryTable = pandas.DataFrame(Data).transpose()
+	SummaryTable = SummaryTable.sort_values(by=['Count'], ascending=False)
+	SummaryTable['Count'] = SummaryTable['Count'].apply(RenderInt)
+	SummaryTable = SummaryTable[SummaryTable['Percentage'] >= (RateFloor * 100)]
+	if SummaryTable.shape[0] == 0:
+		warnings.warn(f'Summary table is empty. You may want to lower Rate Floor (see -f option).', RuntimeWarning)
+		return '<p>Table is empty!</p>'
+	SummaryTable['Percentage'] = SummaryTable['Percentage'].apply(RenderFloat)
+	for Index, Values in SummaryTable.iterrows():
+			Result.append(f'<tr><td class="number-cell">{Values["Count"]}</td><td class="number-cell">{Values["Percentage"]}</td><td class="structure">{Index}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakeHTML(Statistics):
+	HTML = [
+		'<html>',
+		'<head>',
+		'<link href="https://fonts.googleapis.com/css2?family=Inconsolata" rel="stylesheet">',
+		'<title>FastContext Analysis Report',
+		'</title>',
+		'<style>',
+		'body { font-family: "Inconsolata", monospace; width: 1200px; }',
+		'table, td, th { border: 1px solid #000000; }',
+		'table { width: 100%; border-collapse: collapse; } ',
+		'td, th { padding: 8px; }',
+		'th { background-color: #bec3c9; color: #000000; font-weight: 700; }',
+		'.simple-table-key { background-color: #bec3c9; color: #000000; font-weight: 700; width: 25%; }',
+		'.simple-table-value { background-color: #ffffff; color: #000000; }',
+		'.row-number { background-color: #bec3c9; color: #000000; font-weight: 700; }',
+		'.number-cell { text-align: right; }',
+		'.pattern-sequence { font-weight: 700; }',
+		'.risk { color: #ffffff; }',
+		'.risk-empty { background-color: #ffffff; }',
+		'.risk-low { background-color: #00a400; }',
+		'.risk-medium { background-color: #ffba00; }',
+		'.risk-high { background-color: #fa383e; }',
+		'.risk-full { background-color: #000000; }',
+		'</style>',
+		'</head>',
+		'<body>'
+	]
+	HTML.append(f'<h1>FastContext Analysis Report</h1>')
+	
+	HTML.append(f'<h2>Run Data</h2>')
+	HTML.append(MakeSimpleTable( { **Statistics['FastQ'], **Statistics['RunData'] } ))
+	
+	HTML.append(f'<h2>Performance</h2>')
+	HTML.append(MakeSimpleTable({ **Statistics['Performance'] }))
+	
+	HTML.append(f'<h2>Patterns</h2>')
+	HTML.append(f'<h3>Patterns List</h3>')
+	HTML.append(MakePatternsList(Statistics['PatternsData']['PatternsList']))
+	HTML.append(f'<h3>Patterns Analysis</h3>')
+	HTML.append(MakePatternsAnalysisTable(Statistics['PatternsData']['PatternsAnalysis'], Statistics['PatternsData']['PatternsList']))
+	HTML.append(f'<h3>Other</h3>')
+	HTML.append(MakeSimpleTable({ **Statistics['PatternsData']['Other'] }))
+	
+	HTML.append(f'<h2>Summary</h2>')
+	
+	for Block, Summary in Statistics['Summary'].items():
+		HTML.append(f'<h3>{Block}</h3>')
+		HTML.append( MakeSummaryList(Summary, Namespace.RateFloor))
+	HTML.append('</body>')
+	HTML.append('</html>')
+	return str('\n'.join(HTML))
+
 
 ## ------======| MAIN |======------
 
@@ -333,7 +480,7 @@ def Main(Namespace):
 	
 	# Check Output Files Writeability: TSV and Raw JSON.GZ
 	print(f'# Check output files writeability ...', end='\n')
-	WritableCheck(FileName = Namespace.OutputTSV)
+	WritableCheck(FileName = Namespace.OutputHTML)
 	if Namespace.OutputJSON != 'none': WritableCheck(FileName = Namespace.OutputJSON)
 	
 	# Other Input Variables Check
@@ -347,16 +494,25 @@ def Main(Namespace):
 	# Create Statistics Object
 	print(f'# Create statistics object ...', end='\n')
 	Statistics = {}
-	Statistics['FastQ'] = os.path.realpath(Namespace.InputFile_R1) if InputR2 is None else { 'R1': os.path.realpath(Namespace.InputFile_R1), 'R2': os.path.realpath(Namespace.InputFile_R2) }
-	Statistics['ReadType'] = 'Single-end' if InputR2 is None else 'Paired-end'
-	Statistics['ReadsAnalyzed'] = 0
-	Statistics['MaxReads'] = int(Namespace.MaxReads)
-	Statistics['Performance'] = { 'Threads': int(Namespace.ThreadsNum), 'Started': datetime.datetime.now().isoformat() }
-	Statistics['Patterns'] = { str(Key): { 'F': str(Value), 'R': ReverseComplement(Value), 'Length': len(Value) } for Key, Value in Patterns.items() }
-	Statistics['KmerMaxSize'] = int(Namespace.KmerMaxSize)
-	Statistics['RateFloor'] = float(Namespace.RateFloor)
-	Statistics['UnrecognizedSequence'] = str(Namespace.UnrecognizedSeq)
-	Statistics['PatternsLevenshtein'] = LevenshteinDistances
+	Statistics['FastQ'] = { 'Read': os.path.realpath(Namespace.InputFile_R1) } if InputR2 is None else { 'R1': os.path.realpath(Namespace.InputFile_R1), 'R2': os.path.realpath(Namespace.InputFile_R2) }
+	Statistics['RunData'] = {
+		'Read Type': ( 'Single-end' if InputR2 is None else 'Paired-end' ),
+		'Max Reads': int(Namespace.MaxReads),
+		'Rate Floor': float(Namespace.RateFloor)
+		}
+	Statistics['Performance'] = {
+		'Reads Analyzed': 0,
+		'Threads': int(Namespace.ThreadsNum),
+		'Started': datetime.datetime.now().isoformat()
+		}
+	Statistics['PatternsData'] = {
+		'PatternsList': { str(Key): { 'F': str(Value), 'R': ReverseComplement(Value), 'Length': len(Value) } for Key, Value in Patterns.items() },
+		'PatternsAnalysis': LevenshteinDistances,
+		'Other': {
+			'Unrecognized Sequence': str(Namespace.UnrecognizedSeq),
+			'K-mer Max Size': int(Namespace.KmerMaxSize)
+		}
+	}
 	Statistics['Summary'] = { 'Read': {} } if InputR2 is None else { 'R1': {}, 'R2': {} }
 	Statistics['RawDataset'] = None
 	
@@ -388,9 +544,9 @@ def Main(Namespace):
 				# If single-end, just add the read
 				else: Dataset.append({ 'Name': str(Read1.name), 'Read': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy() } } )
 				# Increment and check read counter
-				Statistics['ReadsAnalyzed'] += 1
+				Statistics['Performance']['Reads Analyzed'] += 1
 				pbar.update(1)
-				if Statistics['ReadsAnalyzed'] == Namespace.MaxReads: break
+				if Statistics['Performance']['Reads Analyzed'] == Namespace.MaxReads: break
 			# Break if file has ended ...
 			except StopIteration:
 				break
@@ -411,16 +567,13 @@ def Main(Namespace):
 	print(f'# Calculate statistics ...', end='\n')
 	for Tag in Tags: Statistics['Summary'][Tag] = SummaryCount(Statistics, Tag)
 	
-	# Write stats to table
-	print(f'# Create statistics TSV table ...', end='\n')
-	Tables = {}
-	for Tag in Tags: Tables[Tag] = Summary2Table(Statistics['Summary'][Tag], Namespace.RateFloor)
-	TextTable = ''
-	for Key, Value in Tables.items(): TextTable += f'# {Key}\n{Value}\n'
-	with open(Namespace.OutputTSV, 'wt') as TSV: TSV.write(TextTable)
-	
 	# Timestamp
 	Statistics['Performance']['Finished'] = datetime.datetime.now().isoformat()
+	
+	# Write stats to table
+	print(f'# Create statistics visualization ...', end='\n')
+	HTML = MakeHTML(Statistics)
+	with open(Namespace.OutputHTML, 'wt') as SummaryFile: SummaryFile.write(HTML)
 	
 	# Write JSON.GZ raw data if necessary
 	if Namespace.OutputJSON != 'none':
