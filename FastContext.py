@@ -77,9 +77,9 @@ def PatternsCheck(Patterns):
 		# Check if value contains valid ATGC sequence
 		if re.fullmatch('^[ATGC]+$', Value) is None: raise ValueError(f'Pattern sequence must contain more than one symbols ATGC: {Value}')
 		# Warn if sequence is too long
-		if len(Value) > 16: warnings.warn(f'Pattern "{Key}" is very long ({len(Value)} bp). This may affect search. You may want to use shorter fragments of it.', RuntimeWarning)
+		if len(Value) > 16: warnings.warn(f'Pattern sequence "{Key}" is very long ({len(Value)} bp). This may affect search. You may want to use shorter fragments of it.', RuntimeWarning)
 	# Warn if patterns are not length-sorted
-	if not LengthSorted(list(PatternsDict.values())): warnings.warn(f'Patterns are not sorted from longest to shortest. Notice that order of patterns matters in search.', RuntimeWarning)
+	if not LengthSorted(list(PatternsDict.values())): warnings.warn(f'Patterns sequences are not sorted from longest to shortest. Notice that order of patterns matters in search.', RuntimeWarning)
 
 # Check Levenshtein distance between pattern sequences, including their reverse complements
 def PatternsLevenshtein(Patterns):
@@ -142,13 +142,13 @@ def PatternsLevenshtein(Patterns):
 def DistancesCheck(Distances):
 	for item in Distances:
 		if item['Risk'] == 'full':
-			if item['Type'] == 'palindrome': warnings.warn(f'Pattern "{item["FirstPattern"]}" is a palindrome. FR orientation is disabled.', RuntimeWarning)
-			elif item['Type'] == 'nested': warnings.warn(f'Patterns "{item["FirstPattern"]}" and "{item["SecondPattern"]}" are nested. Notice that order of patterns matters in search.', RuntimeWarning)
+			if item['Type'] == 'palindrome': warnings.warn(f'Pattern sequence "{item["FirstPattern"]}" is a palindrome. FR orientation is disabled.', RuntimeWarning)
+			elif item['Type'] == 'nested': warnings.warn(f'Pattern sequences "{item["FirstPattern"]}" and "{item["SecondPattern"]}" are nested. Notice that order of patterns matters in search.', RuntimeWarning)
 			elif item['Type'] == 'match': raise ValueError(f'Patterns "{item["FirstPattern"]}" and "{item["SecondPattern"]}" have the same sequences. Please remove one of them.')
 		if item['Risk'] in ['high', 'medium']: 
-			if item['Type'] == 'palindrome': warnings.warn(f'Pattern "{item["FirstPattern"]}" has palindrome risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
-			elif item['Type'] == 'nested': warnings.warn(f'Patterns "{item["FirstPattern"]}" and "{item["SecondPattern"]}" have nesting risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
-			elif item['Type'] == 'match': warnings.warn(f'Patterns "{item["FirstPattern"]}" and "{item["SecondPattern"]}" have matching risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
+			if item['Type'] == 'palindrome': warnings.warn(f'Pattern sequence "{item["FirstPattern"]}" has palindrome risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
+			elif item['Type'] == 'nested': warnings.warn(f'Pattern sequences "{item["FirstPattern"]}" and "{item["SecondPattern"]}" have nesting risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
+			elif item['Type'] == 'match': warnings.warn(f'Pattern sequences "{item["FirstPattern"]}" and "{item["SecondPattern"]}" have matching risk ({item["Risk"]}). This may impact statistics.', RuntimeWarning)
 
 ## ------======| I/O CHECK FUNC |======------
 
@@ -182,14 +182,14 @@ def KmerSizeCheck(KmerMaxSize, Patterns):
 	if KmerMaxSize < 0: raise ValueError(f'K-mer size must be non-negative: {KmerMaxSize}')
 	# Warn if K-mer is longer than necessary
 	LongestPattern = max([len(Value) for Value in Patterns.values()])
-	if KmerMaxSize > LongestPattern: warnings.warn(f'K-mer size is bigger than the longest pattern ({LongestPattern} bp). Notice that big K-mer size may impact statistics.', RuntimeWarning)
+	if KmerMaxSize > LongestPattern: warnings.warn(f'K-mer size is bigger than the longest pattern sequence ({LongestPattern} bp). Notice that K-mer size bigger than necessary may impact statistics.', RuntimeWarning)
 
 # Check unrecognized sequence alias
 def UnrecognizedCheck(UnrecognizedSeq, Patterns):
 	# Check if it contains only small Latin symbols
 	if re.fullmatch('^[a-z]{2,16}$', UnrecognizedSeq) is None: raise ValueError(f'Unrecognized sequence name must contain 2-16 small Latin symbols: {UnrecognizedSeq}')
 	# Check if there is no collision between aliases among patterns
-	if UnrecognizedSeq in Patterns.keys(): raise ValueError(f'Unrecognized sequence name and one of pattern names are equal.')
+	if UnrecognizedSeq in Patterns.keys(): raise ValueError(f'Unrecognized sequence name and one of pattern names are equal ({UnrecognizedSeq}). Rename one of them.')
 
 # Check max read number to be processed
 def MaxReadsCheck(MaxReads):
@@ -200,14 +200,14 @@ def MaxReadsCheck(MaxReads):
 
 # Check rate floor. It must be from 0 to 1
 def RateFloorCheck(RateFloor):
-	if (RateFloor >= 1) or (RateFloor < 0) or (RateFloor != RateFloor): raise ValueError(f'Rate floor must be from 0 to 1: {RateFloor}')
+	if (RateFloor >= 1) or (RateFloor < 0) or (RateFloor != RateFloor): raise ValueError(f'Rate floor must be float from 0 to 1: {RateFloor}')
 
 # Check threads number
 def ThreadsNumCheck(ThreadsNum):
 	# Check positivity
 	if ThreadsNum <= 0: raise ValueError(f'Threads number must be positive: {ThreadsNum}')
 	# Warn if there is more threads than cores
-	if GLOBAL_THREADS * 2 > ThreadsNum > GLOBAL_THREADS: warnings.warn(f'Threads number ({ThreadsNum}) is bigger than CPU count on your device ({GLOBAL_THREADS}). It may impact performance.', RuntimeWarning)
+	if (GLOBAL_THREADS * 2) > ThreadsNum > GLOBAL_THREADS: warnings.warn(f'Threads number ({ThreadsNum}) is bigger than CPU count on your device ({GLOBAL_THREADS}). It may impact performance.', RuntimeWarning)
 	# If threads number is much more than cores number, go on strike
 	if ThreadsNum > GLOBAL_THREADS * 2: raise ValueError(f'Threads number is too big: {ThreadsNum}')
 
@@ -220,18 +220,18 @@ def CreateParser():
 			epilog = f'Author: {__author__}'
 			)
 	Default_parser.add_argument ('-v', '--version', action = 'version', version = __version__)
-	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file (may be gzipped or bzipped)')
-	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f'FastQ input R2 file (may be gzipped or bzipped)')
-	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for, plain JSON format: \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin symbols (a-z), sequences must contain more than one symbols ATGC. Order of patterns is order of search.')
-	Default_parser.add_argument ('-t', '--tsv', required = True, type = str, dest = 'OutputTSV', help = f'Output TSV file. Contains only general statistics.')
-	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON, raw data). Useful if you need to see particular read structure')
-	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max unrecognized K-mer size. Default = {GLOBAL_KMER_SIZE}')
-	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. Default = "{GLOBAL_UNRECOGNIZED}"')
-	Default_parser.add_argument ('-m', '--max-reads', default = GLOBAL_MAX, type = int, dest = 'MaxReads', help = f'Max reads number to analyze (0 - no limit). Default = {GLOBAL_MAX}')
-	Default_parser.add_argument ('-f', '--rate-floor', default = GLOBAL_RATE_FLOOR, type = float, dest = 'RateFloor', help = f'Min rate to write pattern into stats TSV table. Default = {GLOBAL_RATE_FLOOR}')
+	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file. May be uncompressed, gzipped or bzipped. Required.')
+	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f' FastQ input R2 file. May be uncompressed, gzipped or bzipped. If single-end mode, ignore this option.')
+	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for. Plain Javascript Object String (Key-Value), e.g. \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. The order of patterns is the order of search. Required.')
+	Default_parser.add_argument ('-s', '--summary', required = True, type = str, dest = 'OutputHTML', help = f'Output HTML file. Contains statistics summary in human-readable form. Required')
+	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON). Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).')
+	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max size of unrecognized sequence to be written as K-mer of certain length. Non-negative integer. Default = {GLOBAL_KMER_SIZE}')
+	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. 2-16 small Latin chars. Default = "{GLOBAL_UNRECOGNIZED}"')
+	Default_parser.add_argument ('-m', '--max-reads', default = GLOBAL_MAX, type = int, dest = 'MaxReads', help = f'Max reads number to analyze (0 -- no limit). Non-negative integer. Notice that read number bigger than recommended may cause memory overflow. Default = {GLOBAL_MAX}')
+	Default_parser.add_argument ('-f', '--rate-floor', default = GLOBAL_RATE_FLOOR, type = float, dest = 'RateFloor', help = f'Min rate to write read structure into statistics TSV table. Float from 0 to 1. Non-negative integer less than 2*cpu_count(). Default = {GLOBAL_RATE_FLOOR}')
 	Default_parser.add_argument ('-@', '--threads', default = GLOBAL_THREADS, type = int, dest = 'ThreadsNum', help = f'Threads number. Default = {GLOBAL_THREADS}')
-	Default_parser.add_argument ('-d', '--dont-check-read-names', action = 'store_true', dest = 'DontCheckReadNames', help = f'Don\'t check read names. Use this if you have unusual paired read names. Makes sense only in paired reads mode. Disabled by default.')
-	Default_parser.add_argument ('-l', '--levenshtein', action = 'store_true', dest = 'CalculateLevenshtein', help = f'Calculate Levenshtein distances for each position in read. Notice that it highly increases the time of processing.')
+	Default_parser.add_argument ('-d', '--dont-check-read-names', action = 'store_true', dest = 'DontCheckReadNames', help = f'Don\'t check read names. Use this if you have unusual (non-Illumina) paired read names. Makes sense only in paired reads mode. Disabled by default.')
+	Default_parser.add_argument ('-l', '--levenshtein', action = 'store_true', dest = 'CalculateLevenshtein', help = f'Calculate patterns Levenshtein distances for each position in read. Results are written into extended statistics file (JSON.GZ). Notice that it highly increases the time of processing.')
 	return Default_parser
 
 ## ------======| ANALYSIS |======------
@@ -276,11 +276,11 @@ def AnalyzeSequence(Read, ToolKit):
 		Sequence = Sequence.replace('}{', '},{')
 		Sequence = f'[{Sequence}]'
 		# Load JSON string
-		Read[Type]['Pattern'] = json.loads(Sequence)
+		Read[Type]['ReadStructure'] = json.loads(Sequence)
 		# Create human-readable and machine-countable text pattern from dictionary
 		# It will be used while calculating statistics
 		TextPattern = list()
-		for Sector in Read[Type]['Pattern']:
+		for Sector in Read[Type]['ReadStructure']:
 			if Sector['type'] == 'unrecognized': TextSector = str(GLOBAL_UNRECOGNIZED)
 			elif Sector['type'] == 'pattern':
 				if Sector['strand'] is None: TextSector = str(Sector['name'])
@@ -289,7 +289,7 @@ def AnalyzeSequence(Read, ToolKit):
 			TextPattern.append(str(TextSector))
 		TextPattern = '--'.join([f'{{{pat}}}' for pat in TextPattern])
 		# Write text pattern to stats
-		Read[Type]['TextPattern'] = str(TextPattern)
+		Read[Type]['TextReadStructure'] = str(TextPattern)
 	# Return annotated read or read pair
 	return Read
 
@@ -297,33 +297,180 @@ def AnalyzeSequence(Read, ToolKit):
 
 # Count Summary
 def SummaryCount(Statistics, Tag):
-	Counts = Counter([item[Tag]['TextPattern'] for item in Statistics['RawDataset']])
-	return { Key: { 'Count': Value, 'Rate': Value / Statistics['ReadsAnalyzed'] } for Key, Value in Counts.items() }
-
+	Counts = {}
+	for Item in tqdm.tqdm(Statistics['RawDataset'], total = len(Statistics['RawDataset']), desc = f'Read structures counted [{Tag}]'):
+		try:
+			Counts[Item[Tag]['TextReadStructure']]['Count'] += 1
+		except KeyError:
+			Counts[str(Item[Tag]['TextReadStructure'])] = { 'Count': 1, 'ReadStructure': Item[Tag]['ReadStructure'] }
+	
+	return { Key: { 'Count': int(Value['Count']), 'Percentage': float(Value['Count'] / Statistics['Performance']['Reads Analyzed'] * 100), 'ReadStructure': Value['ReadStructure'] } for Key, Value in Counts.items() }
+	
 # Create TSV table from Summary
 def Summary2Table(Summary, RateFloor):
 	Table = pandas.DataFrame(Summary).transpose().reset_index()
 	# Filter by rate floor and sort by rate
-	Table = Table[Table['Rate'] >= RateFloor].sort_values(by=['Rate'], ascending=False)
+	Table = Table[Table['Percentage'] >= RateFloor].sort_values(by=['Percentage'], ascending=False)
 	Table['Count'] = Table['Count'].apply(int)
 	# Calculate percentage
-	Table['Rate'] = Table['Rate'].apply(lambda x: x * 100)
-	Table = Table[['Count', 'Rate', 'index']].rename(columns = {'index': 'Pattern'})
+	Table['Percentage'] = Table['Percentage'].apply(lambda x: x * 100)
+	Table = Table[['Count', 'Percentage', 'index']].rename(columns = {'index': 'ReadStructure'})
 	# Return TSV as string
 	return Table.to_csv(sep='\t', index=False)
+
+## ------======| VISUALIZATION |======------
+
+def RenderInt(Int): return f'{int(Int):,}'
+
+def RenderFloat(Float): return '<0.001' if Float < 0.001 else f'{Float:.3f}'
+
+def ColorSequence(Sequence):
+	Result = []
+	Color = {'A': '#00a400;', 'T': '#fa383e', 'C': '#3578e5', 'G': '#e6a700'}
+	for Char in Sequence: Result.append(f'<span style="color: {Color[Char]};">{Char}</span>')
+	return ''.join(Result)
+
+def MakeSimpleTable(Data):
+	Result = [
+		'<table class="simple-table">',
+		'<tbody>'
+	]
+	for Key, Value in Data.items():
+		if type(Value) == int: Value = RenderInt(Value)
+		Result.append(f'<tr><td class="simple-table-key">{Key}</td><td class="simple-table-value">{Value}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakePatternsList(Data):
+	Result = [
+		'<table class="patterns-list">'
+		'<thead>',
+		'<tr><th>#</th><th>Pattern Name</th><th>Forward Strand</th><th>Reverse Strand</th><th>Length [bp]</th></tr>',
+		'</thead>',
+		'<tbody>'
+	]
+	for Index, Details in enumerate(Data.items()):
+		Result.append(f'<tr><td class="row-number number-cell">{Index + 1}</td><td>{Details[0]}</td><td class="pattern-sequence">{ColorSequence(Details[1]["F"])}</td><td class="pattern-sequence">{ColorSequence(Details[1]["R"])}</td><td class="number-cell">{Details[1]["Length"]}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakePatternsAnalysisTable(Data, Patterns):
+	Result = [
+		'<table class="patterns-analysis">'
+		'<thead>'
+	]
+	HeaderList = ['<tr>', '<th>-</th>']
+	for Item in Patterns: HeaderList.append(f'<th>{Item}</th>')
+	HeaderList.append('</tr>')
+	Result.append(''.join(HeaderList))
+	Result.append('</thead>')
+	Result.append('<tbody>')
+	
+	PatternsAnalysisTable = pandas.DataFrame(Data)
+	PatternsAnalysisTable['Dict'] = PatternsAnalysisTable.apply(dict, axis=1)
+	PatternsAnalysisTable = PatternsAnalysisTable.set_index(['FirstPattern', 'SecondPattern'])['Dict'].unstack()
+	PatternsAnalysisTable = PatternsAnalysisTable[Patterns.keys()].transpose()[Patterns.keys()].transpose()
+	for Index, Line in PatternsAnalysisTable.iterrows():
+		LineList = ['<tr>', f'<td class="row-number">{Index}</td>']
+		for Cell in Line: 
+			if Cell != Cell: LineList.append('<td class="risk-empty">-</td>')
+			else: LineList.append(f'<td class="risk risk-{Cell["Risk"]}">{Cell["Type"]}</td>')
+		LineList.append('</tr>')
+		Result.append(''.join(LineList))
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakeSummaryList(Data, RateFloor):
+	Result = [
+		'<table class="summary-list">'
+		'<thead>',
+		'<tr><th>Count</th><th>Percentage</th><th>Read Structure</th></tr>',
+		'</thead>',
+		'<tbody>'
+	]
+	SummaryTable = pandas.DataFrame(Data).transpose()
+	SummaryTable = SummaryTable.sort_values(by=['Count'], ascending=False)
+	SummaryTable['Count'] = SummaryTable['Count'].apply(RenderInt)
+	SummaryTable = SummaryTable[SummaryTable['Percentage'] >= (RateFloor * 100)]
+	if SummaryTable.shape[0] == 0:
+		warnings.warn(f'Summary table is empty. You may want to lower Rate Floor (see -f option).', RuntimeWarning)
+		return '<p>Table is empty!</p>'
+	SummaryTable['Percentage'] = SummaryTable['Percentage'].apply(RenderFloat)
+	for Index, Values in SummaryTable.iterrows():
+			Result.append(f'<tr><td class="number-cell">{Values["Count"]}</td><td class="number-cell">{Values["Percentage"]}</td><td class="structure">{Index}</td></tr>')
+	Result.append('</tbody>')
+	Result.append('</table>')
+	return '\n'.join(Result)
+
+def MakeHTML(Statistics):
+	HTML = [
+		'<html>',
+		'<head>',
+		'<link href="https://fonts.googleapis.com/css2?family=Inconsolata" rel="stylesheet">',
+		'<title>FastContext Analysis Report',
+		'</title>',
+		'<style>',
+		'body { font-family: "Inconsolata", monospace; width: 1200px; }',
+		'table, td, th { border: 1px solid #000000; }',
+		'table { width: 100%; border-collapse: collapse; } ',
+		'td, th { padding: 8px; }',
+		'th { background-color: #bec3c9; color: #000000; font-weight: 700; }',
+		'.simple-table-key { background-color: #bec3c9; color: #000000; font-weight: 700; width: 25%; }',
+		'.simple-table-value { background-color: #ffffff; color: #000000; }',
+		'.row-number { background-color: #bec3c9; color: #000000; font-weight: 700; }',
+		'.number-cell { text-align: right; }',
+		'.pattern-sequence { font-weight: 700; }',
+		'.risk { color: #ffffff; }',
+		'.risk-empty { background-color: #ffffff; }',
+		'.risk-low { background-color: #00a400; }',
+		'.risk-medium { background-color: #ffba00; }',
+		'.risk-high { background-color: #fa383e; }',
+		'.risk-full { background-color: #000000; }',
+		'</style>',
+		'</head>',
+		'<body>'
+	]
+	HTML.append(f'<h1>FastContext Analysis Report</h1>')
+	
+	HTML.append(f'<h2>Run Data</h2>')
+	HTML.append(MakeSimpleTable( { **Statistics['FastQ'], **Statistics['RunData'] } ))
+	
+	HTML.append(f'<h2>Performance</h2>')
+	HTML.append(MakeSimpleTable({ **Statistics['Performance'] }))
+	
+	HTML.append(f'<h2>Patterns</h2>')
+	HTML.append(f'<h3>Patterns List</h3>')
+	HTML.append(MakePatternsList(Statistics['PatternsData']['PatternsList']))
+	HTML.append(f'<h3>Patterns Analysis</h3>')
+	HTML.append(MakePatternsAnalysisTable(Statistics['PatternsData']['PatternsAnalysis'], Statistics['PatternsData']['PatternsList']))
+	HTML.append(f'<h3>Other</h3>')
+	HTML.append(MakeSimpleTable({ **Statistics['PatternsData']['Other'] }))
+	
+	HTML.append(f'<h2>Summary</h2>')
+	
+	for Block, Summary in Statistics['Summary'].items():
+		HTML.append(f'<h3>{Block}</h3>')
+		HTML.append( MakeSummaryList(Summary, Namespace.RateFloor))
+	HTML.append('</body>')
+	HTML.append('</html>')
+	return str('\n'.join(HTML))
+
 
 ## ------======| MAIN |======------
 
 def Main(Namespace):
 	
 	# Open FastQ Files
-	print(f'# Open FastQ files...', end='\n')
+	print(f'# Open FastQ files ...', end='\n')
 	InputR1 = OpenFastQ(FileName = Namespace.InputFile_R1)
 	# If single-end, set InputR2 to None
 	InputR2 = None if (Namespace.InputFile_R2 == 'none') else OpenFastQ(FileName = Namespace.InputFile_R2)
 	
 	# Check Patterns
-	print(f'# Check patterns...', end='\n')
+	print(f'# Check patterns ...', end='\n')
 	PatternsCheck(Patterns = Namespace.Patterns)
 	# OK, they looks good, now load
 	Patterns = json.loads(Namespace.Patterns)
@@ -332,12 +479,12 @@ def Main(Namespace):
 	DistancesCheck(Distances = LevenshteinDistances)
 	
 	# Check Output Files Writeability: TSV and Raw JSON.GZ
-	print(f'# Check output files writeability...', end='\n')
-	WritableCheck(FileName = Namespace.OutputTSV)
+	print(f'# Check output files writeability ...', end='\n')
+	WritableCheck(FileName = Namespace.OutputHTML)
 	if Namespace.OutputJSON != 'none': WritableCheck(FileName = Namespace.OutputJSON)
 	
 	# Other Input Variables Check
-	print(f'# Check input variables...', end='\n')
+	print(f'# Check input variables ...', end='\n')
 	KmerSizeCheck(KmerMaxSize = Namespace.KmerMaxSize, Patterns = Patterns)
 	UnrecognizedCheck(UnrecognizedSeq = Namespace.UnrecognizedSeq, Patterns = Patterns)
 	MaxReadsCheck(MaxReads = Namespace.MaxReads)
@@ -345,18 +492,27 @@ def Main(Namespace):
 	ThreadsNumCheck(ThreadsNum = Namespace.ThreadsNum)
 	
 	# Create Statistics Object
-	print(f'# Create statistics object...', end='\n')
+	print(f'# Create statistics object ...', end='\n')
 	Statistics = {}
-	Statistics['FastQ'] = os.path.realpath(Namespace.InputFile_R1) if InputR2 is None else { 'R1': os.path.realpath(Namespace.InputFile_R1), 'R2': os.path.realpath(Namespace.InputFile_R2) }
-	Statistics['ReadType'] = 'Single-end' if InputR2 is None else 'Paired-end'
-	Statistics['ReadsAnalyzed'] = 0
-	Statistics['MaxReads'] = int(Namespace.MaxReads)
-	Statistics['Performance'] = { 'Threads': int(Namespace.ThreadsNum), 'Started': datetime.datetime.now().isoformat() }
-	Statistics['Patterns'] = { str(Key): { 'F': str(Value), 'R': ReverseComplement(Value), 'Length': len(Value) } for Key, Value in Patterns.items() }
-	Statistics['KmerMaxSize'] = int(Namespace.KmerMaxSize)
-	Statistics['RateFloor'] = float(Namespace.RateFloor)
-	Statistics['UnrecognizedSequence'] = str(Namespace.UnrecognizedSeq)
-	Statistics['PatternsLevenshtein'] = LevenshteinDistances
+	Statistics['FastQ'] = { 'Read': os.path.realpath(Namespace.InputFile_R1) } if InputR2 is None else { 'R1': os.path.realpath(Namespace.InputFile_R1), 'R2': os.path.realpath(Namespace.InputFile_R2) }
+	Statistics['RunData'] = {
+		'Read Type': ( 'Single-end' if InputR2 is None else 'Paired-end' ),
+		'Max Reads': int(Namespace.MaxReads),
+		'Rate Floor': float(Namespace.RateFloor)
+		}
+	Statistics['Performance'] = {
+		'Reads Analyzed': 0,
+		'Threads': int(Namespace.ThreadsNum),
+		'Started': datetime.datetime.now().isoformat()
+		}
+	Statistics['PatternsData'] = {
+		'PatternsList': { str(Key): { 'F': str(Value), 'R': ReverseComplement(Value), 'Length': len(Value) } for Key, Value in Patterns.items() },
+		'PatternsAnalysis': LevenshteinDistances,
+		'Other': {
+			'Unrecognized Sequence': str(Namespace.UnrecognizedSeq),
+			'K-mer Max Size': int(Namespace.KmerMaxSize)
+		}
+	}
 	Statistics['Summary'] = { 'Read': {} } if InputR2 is None else { 'R1': {}, 'R2': {} }
 	Statistics['RawDataset'] = None
 	
@@ -373,7 +529,7 @@ def Main(Namespace):
 	Dataset = list()
 	
 	# Read FastQ Files. tqdm progressbar is enabled
-	print(f'# Start FastQ parsing...', end='\n')
+	print(f'# Start FastQ parsing ...', end='\n')
 	with tqdm.tqdm(desc='Reads parsed', unit='') as pbar:
 		while 1:
 			try:
@@ -382,15 +538,15 @@ def Main(Namespace):
 				if InputR2 is not None: 
 					Read2 = next(InputR2)
 					# Check Read Names
-					if (Read1.name != Read2.name) and not (Namespace.DontCheckReadNames): raise RuntimeError(f'Read names in pair are not the same: "{Read1.name}", "{Read2.name}". If you\'re sure your files are valid, run the script with -d option.')
+					if (Read1.name != Read2.name) and not (Namespace.DontCheckReadNames): raise RuntimeError(f'Read names in pair are not the same: "{Read1.name}", "{Read2.name}". If you\'re sure your FastQ files are valid, run the script with -d option.')
 					# Add read to dataset. Notice that Phred quals are added too
 					Dataset.append({ 'Name': str(Read1.name), 'R1': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy() }, 'R2': { 'Sequence': Read2.seq.__str__(), 'PhredQual': Read2.letter_annotations['phred_quality'].copy() } })
 				# If single-end, just add the read
 				else: Dataset.append({ 'Name': str(Read1.name), 'Read': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy() } } )
 				# Increment and check read counter
-				Statistics['ReadsAnalyzed'] += 1
+				Statistics['Performance']['Reads Analyzed'] += 1
 				pbar.update(1)
-				if Statistics['ReadsAnalyzed'] == Namespace.MaxReads: break
+				if Statistics['Performance']['Reads Analyzed'] == Namespace.MaxReads: break
 			# Break if file has ended ...
 			except StopIteration:
 				break
@@ -402,29 +558,26 @@ def Main(Namespace):
 	if not Dataset: raise ValueError(f'FastQ file is empty.')
 	
 	# Read analysis
-	print(f'# Start read analysis on {Namespace.ThreadsNum} threads...', end='\n')
+	print(f'# Start read analysis on {Namespace.ThreadsNum} threads ...', end='\n')
 	with Threading(Namespace.ThreadsNum) as Pool:
 		Statistics['RawDataset'] = list(tqdm.tqdm(Pool.imap(functools.partial(AnalyzeSequence, ToolKit=ToolKit), Dataset), total=len(Dataset), desc=f'Reads analyzed'))
 	
 	# Calculate statistics
 	Tags = ('Read',) if InputR2 is None else ('R1', 'R2')
-	print(f'# Calculate statistics...', end='\n')
+	print(f'# Calculate statistics ...', end='\n')
 	for Tag in Tags: Statistics['Summary'][Tag] = SummaryCount(Statistics, Tag)
-	
-	# Write stats to table
-	print(f'# Create statistics table...', end='\n')
-	Tables = {}
-	for Tag in Tags: Tables[Tag] = Summary2Table(Statistics['Summary'][Tag], Namespace.RateFloor)
-	TextTable = ''
-	for Key, Value in Tables.items(): TextTable += f'# {Key}\n{Value}\n'
-	with open(Namespace.OutputTSV, 'wt') as TSV: TSV.write(TextTable)
 	
 	# Timestamp
 	Statistics['Performance']['Finished'] = datetime.datetime.now().isoformat()
 	
+	# Write stats to table
+	print(f'# Create statistics visualization ...', end='\n')
+	HTML = MakeHTML(Statistics)
+	with open(Namespace.OutputHTML, 'wt') as SummaryFile: SummaryFile.write(HTML)
+	
 	# Write JSON.GZ raw data if necessary
 	if Namespace.OutputJSON != 'none':
-		print(f'# Save raw JSON data...', end='\n')
+		print(f'# Save extended statistics (JSON.GZ) data ...', end='\n')
 		json.dump(Statistics, gzip.open(Namespace.OutputJSON, 'wt'), separators=(',', ':'))
 	
 	# Bye-bye, baby
