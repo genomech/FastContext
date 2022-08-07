@@ -1,8 +1,12 @@
 # FastContext
 
+![PyPI](https://img.shields.io/pypi/v/FastContext?style=flat-square)
+![PyPI - Python Version](https://img.shields.io/pypi/pyversions/FastContext?style=flat-square)
+![PyPI - Status](https://img.shields.io/pypi/status/FastContext?style=flat-square)
 ![GitHub issues](https://img.shields.io/github/issues/regnveig/FastContext?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/regnveig/FastContext/sandbox?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/regnveig/FastContext?style=flat-square)
+![Keybase PGP](https://img.shields.io/keybase/pgp/regnveig?style=flat-square)
 
 ## Description
 
@@ -10,20 +14,16 @@ FastContext is a tool for identification of adapters and other sequence patterns
 The algorithm parses FastQ files (in a single-end or paired-end mode), searches read or read pair for user-specified patterns, and then generates a human-readable representation of the search results, which we call "read structure".
 Also FastContext gathers statistics on frequency of occurence for each read structure.
 
-## Dependencies
-
-1. Python 3.8.10+
-2. Python packages:
-	- argparse 1.4.0+
-	- BioPython 1.79+
-	- pandas 1.2.5+
-	- python-Levenshtein 0.12.2
-	- tqdm 4.61.2+
-
-Install dependencies with the one-liner (Linux):
+## Installation
 
 ```bash
-python3 -m pip install argparse biopython pandas python-Levenshtein tqdm
+python3 -m pip install FastContext
+```
+
+Check installation:
+
+```bash
+FastContext --help
 ```
 
 ## Usage
@@ -337,7 +337,3 @@ Example is shorten.
 	]
 }
 ```
-
-## Citation
-
-Will be soon :)

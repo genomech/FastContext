@@ -1,6 +1,6 @@
 #!/bin/python3
 
-__version__ = "0.9b"
+__version__ = "2022.8.8.1"
 __author__ = "Emil Viesná"
 
 from Bio import SeqIO
@@ -405,7 +405,7 @@ def MakeSummaryList(Data, RateFloor):
 	Result.append('</table>')
 	return '\n'.join(Result)
 
-def MakeHTML(Statistics):
+def MakeHTML(Statistics, RateFloor):
 	HTML = [
 		'<html>',
 		'<head>',
@@ -453,7 +453,7 @@ def MakeHTML(Statistics):
 	
 	for Block, Summary in Statistics['Summary'].items():
 		HTML.append(f'<h3>{Block}</h3>')
-		HTML.append( MakeSummaryList(Summary, Namespace.RateFloor))
+		HTML.append( MakeSummaryList(Summary, RateFloor))
 	HTML.append('</body>')
 	HTML.append('</html>')
 	return str('\n'.join(HTML))
@@ -572,7 +572,7 @@ def Main(Namespace):
 	
 	# Write stats to table
 	print(f'# Create statistics visualization ...', end='\n')
-	HTML = MakeHTML(Statistics)
+	HTML = MakeHTML(Statistics, Namespace.RateFloor)
 	with open(Namespace.OutputHTML, 'wt') as SummaryFile: SummaryFile.write(HTML)
 	
 	# Write JSON.GZ raw data if necessary
@@ -583,9 +583,9 @@ def Main(Namespace):
 	# Bye-bye, baby
 	print(f'# FastQ analysis ended successfully.', end='\n')
 
-if __name__ == '__main__':
-	
+def main():
 	Parser = CreateParser()
 	Namespace = Parser.parse_args(sys.argv[1:])
-	
 	Main(Namespace)
+
+if __name__ == '__main__': main()
