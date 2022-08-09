@@ -3,6 +3,7 @@
 ![PyPI](https://img.shields.io/pypi/v/FastContext?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/FastContext?style=flat-square)
 ![PyPI - Status](https://img.shields.io/pypi/status/FastContext?style=flat-square)
+![PyPI - Downloads](https://img.shields.io/pypi/dm/FastContext?style=flat-square)
 ![GitHub issues](https://img.shields.io/github/issues/regnveig/FastContext?style=flat-square)
 ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/regnveig/FastContext/sandbox?style=flat-square)
 ![GitHub](https://img.shields.io/github/license/regnveig/FastContext?style=flat-square)
