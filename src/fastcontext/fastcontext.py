@@ -1,7 +1,7 @@
 #!/bin/python3
 
-__version__ = "2022.8.8.1"
-__author__ = "Emil Viesná"
+__version__ = "2022.8.30"
+__bugtracker__ = "https://github.com/regnveig/FastContext/issues"
 
 from Bio import SeqIO
 from Bio.Seq import Seq
@@ -73,7 +73,7 @@ def PatternsCheck(Patterns):
 		if (type(Value) != str): raise ValueError(f'Invalid type of pattern sequence ({type(Value)}), must be string: {Value}')
 		# Check if key contains only small Latin and numerics
 		# It is important to avoid unwanted matches with ATGC
-		if re.fullmatch('^[a-z0-9]{2,16}$', Key) is None: raise ValueError(f'Pattern name must contain 2-16 small Latin and numeric symbols: {Key}')
+		if re.fullmatch('^[A-Za-z0-9\\-_]{2,24}$', Key) is None: raise ValueError(f'Pattern name must contain 2-24 Latin and numeric symbols, or -_-: {Key}')
 		# Check if value contains valid ATGC sequence
 		if re.fullmatch('^[ATGC]+$', Value) is None: raise ValueError(f'Pattern sequence must contain more than one symbols ATGC: {Value}')
 		# Warn if sequence is too long
@@ -187,7 +187,7 @@ def KmerSizeCheck(KmerMaxSize, Patterns):
 # Check unrecognized sequence alias
 def UnrecognizedCheck(UnrecognizedSeq, Patterns):
 	# Check if it contains only small Latin symbols
-	if re.fullmatch('^[a-z]{2,16}$', UnrecognizedSeq) is None: raise ValueError(f'Unrecognized sequence name must contain 2-16 small Latin symbols: {UnrecognizedSeq}')
+	if re.fullmatch('^[A-Za-z0-9\\-_]{2,24}$', UnrecognizedSeq) is None: raise ValueError(f'Unrecognized sequence name must contain 2-24 Latin symbols, numerics, or -_-: {UnrecognizedSeq}')
 	# Check if there is no collision between aliases among patterns
 	if UnrecognizedSeq in Patterns.keys(): raise ValueError(f'Unrecognized sequence name and one of pattern names are equal ({UnrecognizedSeq}). Rename one of them.')
 
@@ -217,16 +217,16 @@ def CreateParser():
 	Default_parser = argparse.ArgumentParser(
 			formatter_class = argparse.RawDescriptionHelpFormatter,
 			description = f'FastContext: FastQ Context Analyzer, version {__version__}',
-			epilog = f'Author: {__author__}'
+			epilog = f'Bugtracker: {__bugtracker__}'
 			)
 	Default_parser.add_argument ('-v', '--version', action = 'version', version = __version__)
 	Default_parser.add_argument ('-1', '--r1', required = True, type = str, dest = 'InputFile_R1', help = f'FastQ input R1 file. May be uncompressed, gzipped or bzipped. Required.')
 	Default_parser.add_argument ('-2', '--r2', type = str, default = 'none', dest = 'InputFile_R2', help = f' FastQ input R2 file. May be uncompressed, gzipped or bzipped. If single-end mode, ignore this option.')
-	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for. Plain Javascript Object String (Key-Value), e.g. \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC. The order of patterns is the order of search. Required.')
+	Default_parser.add_argument ('-p', '--patterns', required = True, type = str, dest = 'Patterns', help = f'Patterns to look for. Plain Javascript Object String (Key-Value), e.g. \'{{"first": "GATC", "second": "CTCAGCGCTGAG"}}\'. Names must contain 2-24 Latin symbols, numerics, or -_-, sequences must contain more than one symbols ATGC. The order of patterns is the order of search. Required.')
 	Default_parser.add_argument ('-s', '--summary', required = True, type = str, dest = 'OutputHTML', help = f'Output HTML file. Contains statistics summary in human-readable form. Required')
 	Default_parser.add_argument ('-j', '--json', type = str, default = 'none', dest = 'OutputJSON', help = f'Output JSON.GZ file (gzipped JSON). Contains extended statistics on pattern sequences, each read or read pair: read structure, Levenshtein distances (see -l option).')
 	Default_parser.add_argument ('-k', '--kmer-size', default = GLOBAL_KMER_SIZE, type = int, dest = 'KmerMaxSize', help = f'Max size of unrecognized sequence to be written as K-mer of certain length. Non-negative integer. Default = {GLOBAL_KMER_SIZE}')
-	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. 2-16 small Latin chars. Default = "{GLOBAL_UNRECOGNIZED}"')
+	Default_parser.add_argument ('-u', '--unrecognized', default = GLOBAL_UNRECOGNIZED, type = str, dest = 'UnrecognizedSeq', help = f'Long unrecognized sequences replacement. 2-24 Latin symbols, numerics, or -_-. Default = "{GLOBAL_UNRECOGNIZED}"')
 	Default_parser.add_argument ('-m', '--max-reads', default = GLOBAL_MAX, type = int, dest = 'MaxReads', help = f'Max reads number to analyze (0 -- no limit). Non-negative integer. Notice that read number bigger than recommended may cause memory overflow. Default = {GLOBAL_MAX}')
 	Default_parser.add_argument ('-f', '--rate-floor', default = GLOBAL_RATE_FLOOR, type = float, dest = 'RateFloor', help = f'Min rate to write read structure into statistics TSV table. Float from 0 to 1. Non-negative integer less than 2*cpu_count(). Default = {GLOBAL_RATE_FLOOR}')
 	Default_parser.add_argument ('-@', '--threads', default = GLOBAL_THREADS, type = int, dest = 'ThreadsNum', help = f'Threads number. Default = {GLOBAL_THREADS}')
@@ -250,7 +250,7 @@ def AnalyzeSequence(Read, ToolKit):
 			Strands = ('F',) if (PatternData['F'] == PatternData['R']) else ('F', 'R')
 			for Strand in Strands:
 				# Create replacement string (JSON with all pattern data)
-				Replacement = json.dumps({ 'type': 'pattern', 'name': str(Pattern), 'strand': None if PatternData['F'] == PatternData['R'] else str(Strand) }, separators = (',', ':')) 
+				Replacement = json.dumps({ 'type': 'pattern', 'name': str(Pattern.encode('ascii').hex()), 'strand': None if PatternData['F'] == PatternData['R'] else str(Strand) }, separators = (',', ':'))
 				# Replace all matches
 				Sequence = Sequence.replace(PatternData[Strand], Replacement)
 				# Calculate Levenshtein distance for every position in read and every pattern
@@ -277,6 +277,9 @@ def AnalyzeSequence(Read, ToolKit):
 		Sequence = f'[{Sequence}]'
 		# Load JSON string
 		Read[Type]['ReadStructure'] = json.loads(Sequence)
+		for Index in range(len(Read[Type]['ReadStructure'])):
+			if 'name' in Read[Type]['ReadStructure'][Index]:
+				Read[Type]['ReadStructure'][Index]['name'] = bytearray.fromhex(Read[Type]['ReadStructure'][Index]['name']).decode('ascii')
 		# Create human-readable and machine-countable text pattern from dictionary
 		# It will be used while calculating statistics
 		TextPattern = list()
@@ -540,9 +543,9 @@ def Main(Namespace):
 					# Check Read Names
 					if (Read1.name != Read2.name) and not (Namespace.DontCheckReadNames): raise RuntimeError(f'Read names in pair are not the same: "{Read1.name}", "{Read2.name}". If you\'re sure your FastQ files are valid, run the script with -d option.')
 					# Add read to dataset. Notice that Phred quals are added too
-					Dataset.append({ 'Name': str(Read1.name), 'R1': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy() }, 'R2': { 'Sequence': Read2.seq.__str__(), 'PhredQual': Read2.letter_annotations['phred_quality'].copy() } })
+					Dataset.append({ 'Name': str(Read1.name), 'R1': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy(), 'Description': Read1.description }, 'R2': { 'Sequence': Read2.seq.__str__(), 'PhredQual': Read2.letter_annotations['phred_quality'].copy(), 'Description': Read2.description } })
 				# If single-end, just add the read
-				else: Dataset.append({ 'Name': str(Read1.name), 'Read': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy() } } )
+				else: Dataset.append({ 'Name': str(Read1.name), 'Read': { 'Sequence': Read1.seq.__str__(), 'PhredQual': Read1.letter_annotations['phred_quality'].copy(), 'Description': Read1.description } } )
 				# Increment and check read counter
 				Statistics['Performance']['Reads Analyzed'] += 1
 				pbar.update(1)

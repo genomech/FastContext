@@ -4,13 +4,13 @@ build-backend = "hatchling.build"
 
 [project]
 name = "FastContext"
-version = "2022.8.8.1"
+version = "2022.8.30"
 authors = [ { name = "Emil Viesná", email="regnveig@yandex.ru" } ]
 description = "A tool for identification of adapters and other sequence patterns in the next generation sequencing (NGS) data"
 keywords = ["NGS", "adapters", "bioinformatics", "read", "structure"]
 readme = "README.md"
 license = "GPL-3.0-or-later"
-requires-python = ">= 3.8.10"
+requires-python = ">= 3.8"
 dependencies = [
 	"biopython >= 1.79",
 	"pandas >= 1.2.5",
@@ -19,11 +19,15 @@ dependencies = [
 ]
 classifiers = [
 	"Programming Language :: Python :: 3.8",
+	"Programming Language :: Python :: 3.9",
+	"Programming Language :: Python :: 3.10",
 	"License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
 	"Operating System :: OS Independent",
 	"Natural Language :: English",
 	"Development Status :: 4 - Beta",
-	"Environment :: Console"
+	"Environment :: Console",
+	"Intended Audience :: Science/Research",
+	"Topic :: Scientific/Engineering :: Bio-Informatics"
 ]
 
 [project.scripts]

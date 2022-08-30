@@ -27,7 +27,7 @@ FastContext -1 ${ScriptDir}/nocompression_unusualnames_R1.fq -2 ${ScriptDir}/noc
 echo
 
 echo '--- GZIPPED NORMAL SINGLE-END ---'
-FastContext -1 ${ScriptDir}/gzipped_normal_R1.fastq.gz -p '{"foo": "CTGTCTCTTATACAC", "bar": "CCGAAAACACG", "baz": "TCGTCGGG"}' -s /dev/null
+FastContext -1 ${ScriptDir}/gzipped_normal_R1.fastq.gz -p '{"fooGGG": "CTGTCTCTTATACAC", "barAAA": "CCGAAAACACG", "bazTTT": "TCGTCGGG"}' -s /dev/null
 echo
 
 echo '--- BZIPPED NORMAL PAIRED-END ---'
@@ -182,7 +182,7 @@ FastContext -1 ${ScriptDir}/gzipped_normal_R1.fastq.gz -p '{"foo": "CTGTCTCTTATA
 echo
 
 echo '--- NORMAL TEST SINGLE-END HTML EXAMPLE ---'
-FastContext -1 ${ScriptDir}/standard_test_R1.fastq.gz -p '{"oligme": "CTGTCTCTTATACACATCT", "oligb": "CCGAGCCCACGAGAC", "oliga": "TCGTCGGCAGCGTC", "s502": "CTCTCTAT", "s702": "CTAGTACG", "s701": "TCGCCTTA" }' -k 15 -s ${ScriptDir}/standard_test_stats_se.htm
+FastContext -1 ${ScriptDir}/standard_test_R1.fastq.gz -p '{"oligme": "CTGTCTCTTATACACATCT", "OligG": "CCGAGCCCACGAGAC", "OligATCAA": "TCGTCGGCAGCGTC", "s502": "CTCTCTAT", "s702": "CTAGTACG", "s701": "TCGCCTTA" }' -k 15 -s ${ScriptDir}/standard_test_stats_se.htm
 echo
 
 echo '--- NORMAL TEST PAIRED-END HTML EXAMPLE ---'
