@@ -1,5 +1,7 @@
 # FastContext
 
+![Logo](https://github.com/regnveig/FastContext/blob/stable/logo.png)
+
 ![PyPI](https://img.shields.io/pypi/v/FastContext?style=flat-square)
 ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/FastContext?style=flat-square)
 ![PyPI - Status](https://img.shields.io/pypi/status/FastContext?style=flat-square)
