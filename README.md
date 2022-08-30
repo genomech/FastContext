@@ -51,8 +51,8 @@ May be uncompressed, gzipped or bzipped.<br>
 *Description:* Patterns to look for.
 The order of patterns is the order of search.<br>
 *Format:* Plain Javascript Object String (Key-Value).
-Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences must contain more than one symbols ATGC.<br>
-*Usage:* `-p '{"first": "CTCAGCGCTGAG", "second": "AAAAAA", "third": "GATC"}'`
+Names must contain 2-24 Latin and numeric symbols, and -_-, sequences must contain more than one symbols ATGC.<br>
+*Usage:* `-p '{"First": "CTCAGCGCTGAG", "Second": "AAAAAA", "Third": "GATC"}'`
 
 </dd>
 
@@ -64,7 +64,7 @@ Names must contain 2-16 small Latin and numeric symbols (a-z, 0-9), sequences mu
 Output HTML file.
 Contains statistics summary in human-readable form.<br>
 *Format:* String<br>
-*Usage:* `-f statistics.htm`
+*Usage:* `-s statistics.htm`
 
 </dd>
 
@@ -107,7 +107,7 @@ Max size of unrecognized sequence to be written as K-mer of certain length.<br>
 
 *Description:*
 Long unrecognized sequences replacement.<br>
-*Format:* 2-16 small Latin Chars<br>
+*Format:* 2-24 Latin and numeric symbols, and -_-<br>
 *Default:* `unknown` <br>
 *Usage:* `-u genome`
 
